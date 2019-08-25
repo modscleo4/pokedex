@@ -20,6 +20,7 @@ import com.modscleo4.framework.collection.IRow;
 import com.modscleo4.framework.collection.IRowCollection;
 import com.modscleo4.framework.collection.Row;
 import com.modscleo4.framework.collection.RowCollection;
+import com.modscleo4.framework.database.Connection;
 import com.modscleo4.framework.database.DB;
 import com.modscleo4.framework.database.Table;
 
@@ -41,6 +42,11 @@ public abstract class Model extends Row implements IModel {
     /**
      * The table name.
      */
+    protected static Connection connection = DB.getDefault();
+
+    /**
+     * The table name.
+     */
     protected static String table = "";
 
     /**
@@ -58,7 +64,7 @@ public abstract class Model extends Row implements IModel {
      */
     public Model() {
         super();
-        dbTable = new Table(DB.getConnection(), table);
+        dbTable = new Table(connection, table);
     }
 
     /**
@@ -68,7 +74,7 @@ public abstract class Model extends Row implements IModel {
      */
     public Model(IRow row) {
         super(row);
-        dbTable = new Table(DB.getConnection(), table);
+        dbTable = new Table(connection, table);
     }
 
     @Override
@@ -106,10 +112,8 @@ public abstract class Model extends Row implements IModel {
         String pKey = getKeyName();
 
         if (pKey != null && get(pKey) != null) {
-            // Update
             table.update(pKey, this);
         } else {
-            // Save
             table.store(pKey, this);
         }
 
@@ -250,7 +254,7 @@ public abstract class Model extends Row implements IModel {
                 relatedKey = entity.getKeyName();
             }
 
-            Table pivot = new Table(DB.getConnection(), table);
+            Table pivot = new Table(connection, table);
             IRowCollection searchFor = pivot.where(foreignPivotKey, "=", this.get(parentKey));
             IRowCollection related = new RowCollection();
             for (IRow s : searchFor) {

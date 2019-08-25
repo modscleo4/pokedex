@@ -16,18 +16,34 @@
 
 package com.modscleo4.framework.database;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 /**
- * All DB connections class.
+ * Default DB connections class.
  *
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
 public class DB {
     /**
+     * Gets a default Connection for the framework.
      *
-     *
-     * @return
+     * @return a default Connection for the framework.
      */
-    public static Connection getConnection() {
-        return new Connection("localhost", "5432", "java", "postgres", "postgres");
+    public static Connection getDefault() {
+        Dotenv dotenv = Dotenv.load();
+
+        Drivers driver = Driver.fromName(dotenv.get("DB_DRIVER", "postgresql"));
+        String db = dotenv.get("DB_DATABASE", "java");
+
+        if (driver == Drivers.SQLITE) {
+            return new Connection(db);
+        } else {
+            String host = dotenv.get("DB_HOST", "127.0.0.1");
+            String port = dotenv.get("DB_PORT", "5432");
+            String username = dotenv.get("DB_USERNAME", "postgres");
+            String password = dotenv.get("DB_PASSWORD", "");
+
+            return new Connection(driver, host, port, db, username, password);
+        }
     }
 }

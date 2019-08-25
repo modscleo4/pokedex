@@ -25,31 +25,37 @@ import java.util.Arrays;
  */
 public class Driver {
     /**
-     *
+     * The supported drivers of the framework.
      */
     private static final String[] dbnames = {"sqlite", "mysql", "postgresql", "sqlserver", "as400"};
 
     /**
-     *
+     * The driver name attribute.
      */
     private String name;
 
     /**
-     * @param driver
+     * Creates a new Driver instance.
+     *
+     * @param driver the driver to use
      */
     public Driver(Drivers driver) {
         this.setName(driver);
     }
 
     /**
-     * @return
+     * Gets the driver name (postgresql, sqlite, mysql...)
+     *
+     * @return the driver name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name
+     * Changes the driver.
+     *
+     * @param name the driver name
      */
     private void setName(String name) {
         if (Arrays.asList(Driver.dbnames).contains(name)) {
@@ -60,7 +66,9 @@ public class Driver {
     }
 
     /**
-     * @param driver
+     * Changes the driver name.
+     *
+     * @param driver the new driver
      */
     private void setName(Drivers driver) {
         switch (driver) {
@@ -83,7 +91,9 @@ public class Driver {
     }
 
     /**
-     * @return
+     * Gets the Class name of the selected driver.
+     *
+     * @return the Class name of the selected driver.
      */
     public String getClassName() {
         switch (getName()) {
@@ -103,7 +113,9 @@ public class Driver {
     }
 
     /**
-     * @return
+     * Gets the SQL INSERT command for the specific DBMS.
+     *
+     * @return the SQL INSERT command for the specific DBMS
      */
     public String select() {
         switch (getName()) {
@@ -121,5 +133,22 @@ public class Driver {
     @Override
     public String toString() {
         return name;
+    }
+
+    public static Drivers fromName(String name) {
+        switch (name) {
+            case "sqlite":
+                return Drivers.SQLITE;
+            case "mysql":
+                return Drivers.MYSQL;
+            case "postgresql":
+                return Drivers.POSTGRESQL;
+            case "sqlserver":
+                return Drivers.SQLSERVER;
+            case "as400":
+                return Drivers.AS400;
+            default:
+                throw new IllegalArgumentException("Invalid driver name.");
+        }
     }
 }

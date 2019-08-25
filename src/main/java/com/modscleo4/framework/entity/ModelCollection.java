@@ -20,6 +20,10 @@ import com.modscleo4.framework.callback.IFilterCallback;
 import com.modscleo4.framework.collection.Collection;
 import com.modscleo4.framework.collection.ICollection;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
+
 /**
  * Model Collection class.
  *
@@ -36,6 +40,13 @@ public class ModelCollection<T extends IModel> extends Collection<T> implements 
         return rowCollection;
     }
 
+    private static boolean isNumeric(String str) {
+        NumberFormat formatter = NumberFormat.getInstance();
+        ParsePosition pos = new ParsePosition(0);
+        formatter.parse(str, pos);
+        return str.length() == pos.getIndex();
+    }
+
     @Override
     public IModelCollection<T> sortBy(String column) {
         IModelCollection<T> rowCollection = this;
@@ -44,7 +55,13 @@ public class ModelCollection<T extends IModel> extends Collection<T> implements 
                 return 0;
             }
 
-            return o1.get(column).toString().compareTo(o2.get(column).toString());
+            if (isNumeric(o1.get(column).toString()) && isNumeric(o2.get(column).toString())) {
+                BigDecimal n1 = new BigDecimal(o1.get(column).toString());
+                BigDecimal n2 = new BigDecimal(o2.get(column).toString());
+                return n1.compareTo(n2);
+            } else {
+                return o1.get(column).toString().compareTo(o2.get(column).toString());
+            }
         });
 
         return rowCollection;
@@ -58,7 +75,13 @@ public class ModelCollection<T extends IModel> extends Collection<T> implements 
                 return 0;
             }
 
-            return o2.get(column).toString().compareTo(o1.get(column).toString());
+            if (isNumeric(o1.get(column).toString()) && isNumeric(o2.get(column).toString())) {
+                BigDecimal n1 = new BigDecimal(o1.get(column).toString());
+                BigDecimal n2 = new BigDecimal(o2.get(column).toString());
+                return n2.compareTo(n1);
+            } else {
+                return o2.get(column).toString().compareTo(o1.get(column).toString());
+            }
         });
 
         return rowCollection;

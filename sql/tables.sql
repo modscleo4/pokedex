@@ -1,0 +1,101 @@
+DROP TABLE IF EXISTS users_has_pokemon;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS pokemon_has_weaknesses;
+DROP TABLE IF EXISTS pokemon_has_types;
+DROP TABLE IF EXISTS types;
+DROP TABLE IF EXISTS stats;
+DROP TABLE IF EXISTS pokemon_has_abilities;
+DROP TABLE IF EXISTS abilities;
+DROP TABLE IF EXISTS pokemon_has_genders;
+DROP TABLE IF EXISTS genders;
+DROP TABLE IF EXISTS pokemon;
+DROP TABLE IF EXISTS categories;
+
+CREATE TABLE categories
+(
+    id   BIGSERIAL    NOT NULL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE pokemon
+(
+    id             BIGSERIAL     NOT NULL PRIMARY KEY,
+    name           VARCHAR(100)  NOT NULL UNIQUE,
+    description    TEXT          NOT NULL,
+    height         NUMERIC(5, 2) NOT NULL,
+    category_id    BIGINT        NOT NULL REFERENCES categories,
+    weight         NUMERIC(5, 2) NOT NULL,
+    predecessor_id BIGINT DEFAULT NULL REFERENCES pokemon,
+    successor_id   BIGINT DEFAULT NULL REFERENCES pokemon
+);
+
+CREATE TABLE genders
+(
+    id   BIGSERIAL    NOT NULL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE pokemon_has_genders
+(
+    id_pokemon BIGINT NOT NULL REFERENCES pokemon,
+    id_gender  BIGINT NOT NULL REFERENCES genders
+);
+
+CREATE TABLE abilities
+(
+    id          BIGSERIAL    NOT NULL PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT         NOT NULL
+);
+
+CREATE TABLE pokemon_has_abilities
+(
+    id_pokemon BIGINT NOT NULL REFERENCES pokemon,
+    id_ability BIGINT NOT NULL REFERENCES abilities
+);
+
+CREATE TABLE stats
+(
+    id              BIGSERIAL NOT NULL PRIMARY KEY,
+    id_pokemon      BIGINT    NOT NULL REFERENCES pokemon UNIQUE,
+    hp              INT       NOT NULL,
+    attack          INT       NOT NULL,
+    defense         INT       NOT NULL,
+    special_attack  INT       NOT NULL,
+    special_defense INT       NOT NULL,
+    speed           INT       NOT NULL
+);
+
+CREATE TABLE types
+(
+    id    BIGSERIAL    NOT NULL PRIMARY KEY,
+    name  VARCHAR(100) NOT NULL UNIQUE,
+    color VARCHAR(20)  NOT NULL
+);
+
+CREATE TABLE pokemon_has_types
+(
+    id_pokemon BIGINT NOT NULL REFERENCES pokemon,
+    id_type    BIGINT NOT NULL REFERENCES types
+);
+
+CREATE TABLE pokemon_has_weaknesses
+(
+    id_pokemon    BIGINT NOT NULL REFERENCES pokemon,
+    id_type       BIGINT NOT NULL REFERENCES types,
+    effectiveness INT    NOT NULL DEFAULT 3
+);
+
+CREATE TABLE users
+(
+    id       BIGSERIAL    NOT NULL PRIMARY KEY,
+    name     VARCHAR(100) NOT NULL,
+    email    VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE users_has_pokemon
+(
+    user_id    BIGINT NOT NULL REFERENCES users,
+    pokemon_id BIGINT NOT NULL REFERENCES pokemon
+);

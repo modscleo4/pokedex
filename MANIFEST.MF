@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-app.Main-Class: app.Main
+Main-Class: app.Main

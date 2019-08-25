@@ -89,7 +89,7 @@ public class PokemonWindow extends Window implements ActionListener {
             desc.setAlignmentX(Panel.RIGHT_ALIGNMENT);
             img.add(desc);
 
-            lDescription = new JLabel(pokemon.getDescription());
+            lDescription = new JLabel(String.format("<html>%s</html>", pokemon.getDescription().replace("\\n", "<br />")));
             desc.add(lDescription);
 
             GridLayout infoLayout = new GridLayout(3, 2);

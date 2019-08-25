@@ -56,10 +56,7 @@ public class Connection {
      * @param db the sqlite .db path
      */
     public Connection(String db) {
-        this.driver = new Driver(Drivers.SQLITE);
-        this.username = null;
-        this.password = null;
-        this.url = String.format("jdbc:%s", db);
+        this(Drivers.SQLITE, null, null, db, null, null);
     }
 
     /**
@@ -71,38 +68,48 @@ public class Connection {
      * @param username the username to connects to database
      * @param password the password of username
      */
-    public Connection(String host, String port, String db, String username, String password) {
-        this.driver = new Driver(Drivers.POSTGRESQL);
-        host = host.trim();
-        port = port.trim();
+    public Connection(Drivers driver, String host, String port, String db, String username, String password) {
+        this.driver = new Driver(driver);
         db = db.trim();
-        this.username = username.trim();
-        this.password = password;
+
+        if (driver == Drivers.SQLITE) {
+            this.username = null;
+            this.password = null;
+        } else {
+            host = host.trim();
+            port = port.trim();
+            this.username = username.trim();
+            this.password = password;
+        }
+
         String driverName = this.driver.getName();
 
-        switch (driverName) {
-            case "mysql":
+        switch (driver) {
+            case SQLITE:
+                this.url = String.format("jdbc:%s", db);
+                break;
+            case MYSQL:
                 if (port.equals("")) {
                     port = "3306";
                 }
 
                 this.url = String.format("jdbc:%s://%s:%s/%s", driverName, host, port, db);
                 break;
-            case "postgresql":
+            case POSTGRESQL:
                 if (port.equals("")) {
                     port = "5432";
                 }
 
                 this.url = String.format("jdbc:%s://%s:%s/%s", driverName, host, port, db);
                 break;
-            case "as400":
+            case SQLSERVER:
                 if (port.equals("")) {
                     port = "446";
                 }
 
                 this.url = String.format("jdbc:%s://%s:%s/%s", driverName, host, port, db);
                 break;
-            case "sqlserver":
+            case AS400:
                 if (port.equals("")) {
                     port = "1433";
                 }

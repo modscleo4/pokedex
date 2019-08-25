@@ -24,7 +24,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Pokemon list window class.
@@ -48,7 +47,7 @@ public class MainWindow extends Window implements ActionListener {
 
     private JMenuItem helpAbout;
 
-    public MainWindow() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    public MainWindow() {
         super("Trabalho");
 
         //setLayout(null);
