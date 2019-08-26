@@ -43,6 +43,23 @@ public class Driver {
         this.setName(driver);
     }
 
+    public static Drivers fromName(String name) {
+        switch (name) {
+            case "sqlite":
+                return Drivers.SQLITE;
+            case "mysql":
+                return Drivers.MYSQL;
+            case "postgresql":
+                return Drivers.POSTGRESQL;
+            case "sqlserver":
+                return Drivers.SQLSERVER;
+            case "as400":
+                return Drivers.AS400;
+            default:
+                throw new IllegalArgumentException("Invalid driver name.");
+        }
+    }
+
     /**
      * Gets the driver name (postgresql, sqlite, mysql...)
      *
@@ -133,22 +150,5 @@ public class Driver {
     @Override
     public String toString() {
         return name;
-    }
-
-    public static Drivers fromName(String name) {
-        switch (name) {
-            case "sqlite":
-                return Drivers.SQLITE;
-            case "mysql":
-                return Drivers.MYSQL;
-            case "postgresql":
-                return Drivers.POSTGRESQL;
-            case "sqlserver":
-                return Drivers.SQLSERVER;
-            case "as400":
-                return Drivers.AS400;
-            default:
-                throw new IllegalArgumentException("Invalid driver name.");
-        }
     }
 }

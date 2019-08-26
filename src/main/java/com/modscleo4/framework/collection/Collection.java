@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Collection class.
  *
  * @param <T> the type of the Collection
- *
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
 public class Collection<T> extends ArrayList<T> implements ICollection<T> {

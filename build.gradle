@@ -11,9 +11,20 @@ repositories {
     mavenCentral()
 }
 
+task copyToLib(type: Copy) {
+    into "$buildDir/libs/lib"
+    from configurations.runtime
+}
+
 jar {
+    dependsOn copyToLib
+
     manifest {
         from "MANIFEST.MF"
+
+        attributes(
+                'Class-Path': ("lib/" + fileTree("$buildDir/libs/lib").files.name.join(' lib/')).replace('\n ', '')
+        )
     }
 }
 

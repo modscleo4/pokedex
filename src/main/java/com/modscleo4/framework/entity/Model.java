@@ -16,10 +16,9 @@
 
 package com.modscleo4.framework.entity;
 
+import com.modscleo4.framework.collection.ICollection;
 import com.modscleo4.framework.collection.IRow;
-import com.modscleo4.framework.collection.IRowCollection;
 import com.modscleo4.framework.collection.Row;
-import com.modscleo4.framework.collection.RowCollection;
 import com.modscleo4.framework.database.Connection;
 import com.modscleo4.framework.database.DB;
 import com.modscleo4.framework.database.Table;
@@ -35,47 +34,25 @@ import java.sql.SQLException;
  */
 public abstract class Model extends Row implements IModel {
     /**
-     * The Table object.
+     * The Connection instance.
      */
-    private Table dbTable;
-
+    protected Connection connection = DB.getDefault();
     /**
      * The table name.
      */
-    protected static Connection connection = DB.getDefault();
-
-    /**
-     * The table name.
-     */
-    protected static String table = "";
-
+    protected String table = "";
     /**
      * The table primary key column name.
      */
-    protected static String primaryKey = "id";
-
+    protected String primaryKey = "id";
     /**
      * If the primary key increments.
      */
-    protected static boolean incrementing = true;
-
+    protected boolean incrementing = true;
     /**
-     * Creates a new Model instance.
+     * The Table object.
      */
-    public Model() {
-        super();
-        dbTable = new Table(connection, table);
-    }
-
-    /**
-     * Creates a new Model instance.
-     *
-     * @param row the IRow to copy data from
-     */
-    public Model(IRow row) {
-        super(row);
-        dbTable = new Table(connection, table);
-    }
+    private Table dbTable = null;
 
     @Override
     public String getTable() {
@@ -83,7 +60,16 @@ public abstract class Model extends Row implements IModel {
     }
 
     @Override
+    public Connection getConnection() {
+        return connection;
+    }
+
+    @Override
     public Table getDatabaseTable() {
+        if (dbTable == null || !dbTable.getConnection().equals(getConnection()) || !dbTable.getTableName().equals(getTable())) {
+            dbTable = new Table(getConnection(), getTable());
+        }
+
         return dbTable;
     }
 
@@ -138,7 +124,9 @@ public abstract class Model extends Row implements IModel {
                 return null;
             }
 
-            return className.getDeclaredConstructor(IRow.class).newInstance(row);
+            IModel model = className.getDeclaredConstructor().newInstance();
+            model.fromRow(row);
+            return model;
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new IllegalArgumentException("The entity class could not be instantiated.");
         }
@@ -155,7 +143,7 @@ public abstract class Model extends Row implements IModel {
     }
 
     @Override
-    public IRowCollection hasMany(Class<? extends IModel> className, String foreignKey, String localKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
+    public IModelCollection<? extends IModel> hasMany(Class<? extends IModel> className, String foreignKey, String localKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
         try {
             IModel entity = className.getDeclaredConstructor().newInstance();
 
@@ -167,15 +155,16 @@ public abstract class Model extends Row implements IModel {
                 localKey = getKeyName();
             }
 
-            IRowCollection rows = entity.getDatabaseTable().where(foreignKey, "=", this.get(localKey));
-            IRowCollection related = new RowCollection();
+            ICollection<IRow> rows = entity.getDatabaseTable().where(foreignKey, "=", this.get(localKey));
+            IModelCollection<IModel> related = new ModelCollection<>();
             for (IRow r : rows) {
                 if (r == null) {
                     related.add(null);
                     continue;
                 }
 
-                IModel e = className.getDeclaredConstructor(IRow.class).newInstance(r);
+                IModel e = className.getDeclaredConstructor().newInstance();
+                e.fromRow(r);
                 related.add(e);
             }
 
@@ -186,12 +175,12 @@ public abstract class Model extends Row implements IModel {
     }
 
     @Override
-    public IRowCollection hasMany(Class<? extends IModel> className, String foreignKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
+    public IModelCollection<? extends IModel> hasMany(Class<? extends IModel> className, String foreignKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
         return this.hasMany(className, foreignKey, null);
     }
 
     @Override
-    public IRowCollection hasMany(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
+    public IModelCollection<? extends IModel> hasMany(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
         return this.hasMany(className, null, null);
     }
 
@@ -213,7 +202,9 @@ public abstract class Model extends Row implements IModel {
                 return null;
             }
 
-            return className.getDeclaredConstructor(IRow.class).newInstance(row);
+            IModel model = className.getDeclaredConstructor().newInstance();
+            model.fromRow(row);
+            return model;
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new IllegalArgumentException("The entity class could not be instantiated.");
         }
@@ -230,7 +221,7 @@ public abstract class Model extends Row implements IModel {
     }
 
     @Override
-    public IRowCollection belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey, String parentKey, String relatedKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
+    public IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey, String parentKey, String relatedKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
         try {
             IModel entity = className.getDeclaredConstructor().newInstance();
 
@@ -243,7 +234,7 @@ public abstract class Model extends Row implements IModel {
             }
 
             if (table == null) {
-                table = String.format("%s_has_%s", getClass().getSimpleName(), entity.getTable());
+                table = String.format("%s_has_%s", getClass().getSimpleName().toLowerCase(), entity.getTable());
             }
 
             if (parentKey == null) {
@@ -255,8 +246,8 @@ public abstract class Model extends Row implements IModel {
             }
 
             Table pivot = new Table(connection, table);
-            IRowCollection searchFor = pivot.where(foreignPivotKey, "=", this.get(parentKey));
-            IRowCollection related = new RowCollection();
+            ICollection<IRow> searchFor = pivot.where(foreignPivotKey, "=", this.get(parentKey));
+            IModelCollection<IModel> related = new ModelCollection<>();
             for (IRow s : searchFor) {
                 IRow row = entity.getDatabaseTable().where(relatedKey, "=", s.get(relatedPivotKey)).first();
                 if (row == null) {
@@ -264,7 +255,8 @@ public abstract class Model extends Row implements IModel {
                     continue;
                 }
 
-                IModel e = className.getDeclaredConstructor(IRow.class).newInstance(row);
+                IModel e = className.getDeclaredConstructor().newInstance();
+                e.fromRow(row);
                 related.add(e);
             }
 
@@ -275,27 +267,27 @@ public abstract class Model extends Row implements IModel {
     }
 
     @Override
-    public IRowCollection belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey, String parentKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
+    public IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey, String parentKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
         return this.belongsToMany(className, table, foreignPivotKey, relatedPivotKey, parentKey, null);
     }
 
     @Override
-    public IRowCollection belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
+    public IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
         return this.belongsToMany(className, table, foreignPivotKey, relatedPivotKey, null, null);
     }
 
     @Override
-    public IRowCollection belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
+    public IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
         return this.belongsToMany(className, table, foreignPivotKey, null, null, null);
     }
 
     @Override
-    public IRowCollection belongsToMany(Class<? extends IModel> className, String table) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
+    public IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className, String table) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
         return this.belongsToMany(className, table, null, null, null, null);
     }
 
     @Override
-    public IRowCollection belongsToMany(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
+    public IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
         return this.belongsToMany(className, null, null, null, null, null);
     }
 }

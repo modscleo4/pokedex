@@ -37,8 +37,8 @@ CREATE TABLE genders
 
 CREATE TABLE pokemon_has_genders
 (
-    id_pokemon BIGINT NOT NULL REFERENCES pokemon,
-    id_gender  BIGINT NOT NULL REFERENCES genders
+    pokemon_id BIGINT NOT NULL REFERENCES pokemon,
+    gender_id  BIGINT NOT NULL REFERENCES genders
 );
 
 CREATE TABLE abilities
@@ -50,14 +50,14 @@ CREATE TABLE abilities
 
 CREATE TABLE pokemon_has_abilities
 (
-    id_pokemon BIGINT NOT NULL REFERENCES pokemon,
-    id_ability BIGINT NOT NULL REFERENCES abilities
+    pokemon_id BIGINT NOT NULL REFERENCES pokemon,
+    ability_id BIGINT NOT NULL REFERENCES abilities
 );
 
 CREATE TABLE stats
 (
     id              BIGSERIAL NOT NULL PRIMARY KEY,
-    id_pokemon      BIGINT    NOT NULL REFERENCES pokemon UNIQUE,
+    pokemon_id      BIGINT    NOT NULL REFERENCES pokemon UNIQUE,
     hp              INT       NOT NULL,
     attack          INT       NOT NULL,
     defense         INT       NOT NULL,
@@ -75,14 +75,14 @@ CREATE TABLE types
 
 CREATE TABLE pokemon_has_types
 (
-    id_pokemon BIGINT NOT NULL REFERENCES pokemon,
-    id_type    BIGINT NOT NULL REFERENCES types
+    pokemon_id BIGINT NOT NULL REFERENCES pokemon,
+    type_id    BIGINT NOT NULL REFERENCES types
 );
 
 CREATE TABLE pokemon_has_weaknesses
 (
-    id_pokemon    BIGINT NOT NULL REFERENCES pokemon,
-    id_type       BIGINT NOT NULL REFERENCES types,
+    pokemon_id    BIGINT NOT NULL REFERENCES pokemon,
+    type_id       BIGINT NOT NULL REFERENCES types,
     effectiveness INT    NOT NULL DEFAULT 3
 );
 

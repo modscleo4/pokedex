@@ -17,7 +17,7 @@
 package com.modscleo4.framework.entity;
 
 import com.modscleo4.framework.collection.IRow;
-import com.modscleo4.framework.collection.IRowCollection;
+import com.modscleo4.framework.database.Connection;
 import com.modscleo4.framework.database.Table;
 
 import java.security.InvalidKeyException;
@@ -35,6 +35,13 @@ public interface IModel extends IRow {
      * @return the table name
      */
     String getTable();
+
+    /**
+     * Gets the Connection object.
+     *
+     * @return the Connection object of the class
+     */
+    Connection getConnection();
 
     /**
      * Gets the Table object.
@@ -122,7 +129,7 @@ public interface IModel extends IRow {
      * @throws ClassNotFoundException   if the connection could not be opened
      * @throws InvalidKeyException      if the primary key could not be obtained
      */
-    IRowCollection hasMany(Class<? extends IModel> className, String foreignKey, String localKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModelCollection<? extends IModel> hasMany(Class<? extends IModel> className, String foreignKey, String localKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
 
     /**
      * Runs hasMany relation between the entities.
@@ -135,7 +142,7 @@ public interface IModel extends IRow {
      * @throws ClassNotFoundException   if the connection could not be opened
      * @throws InvalidKeyException      if the primary key could not be obtained
      */
-    IRowCollection hasMany(Class<? extends IModel> className, String foreignKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModelCollection<? extends IModel> hasMany(Class<? extends IModel> className, String foreignKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
 
     /**
      * Runs hasMany relation between the entities.
@@ -147,7 +154,7 @@ public interface IModel extends IRow {
      * @throws ClassNotFoundException   if the connection could not be opened
      * @throws InvalidKeyException      if the primary key could not be obtained
      */
-    IRowCollection hasMany(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModelCollection<? extends IModel> hasMany(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
 
     /**
      * Runs belongsTo relation between the entities.
@@ -203,7 +210,7 @@ public interface IModel extends IRow {
      * @throws ClassNotFoundException   if the connection could not be opened
      * @throws InvalidKeyException      if the primary key could not be obtained
      */
-    IRowCollection belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey, String foreignKey, String ownerKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey, String foreignKey, String ownerKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
 
     /**
      * Runs belongsToMany relation between the entities.
@@ -219,7 +226,7 @@ public interface IModel extends IRow {
      * @throws ClassNotFoundException   if the connection could not be opened
      * @throws InvalidKeyException      if the primary key could not be obtained
      */
-    IRowCollection belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey, String foreignKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey, String foreignKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
 
     /**
      * Runs belongsToMany relation between the entities.
@@ -234,7 +241,7 @@ public interface IModel extends IRow {
      * @throws ClassNotFoundException   if the connection could not be opened
      * @throws InvalidKeyException      if the primary key could not be obtained
      */
-    IRowCollection belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
 
     /**
      * Runs belongsToMany relation between the entities.
@@ -248,7 +255,7 @@ public interface IModel extends IRow {
      * @throws ClassNotFoundException   if the connection could not be opened
      * @throws InvalidKeyException      if the primary key could not be obtained
      */
-    IRowCollection belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className, String table, String foreignPivotKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
 
     /**
      * Runs belongsToMany relation between the entities.
@@ -261,7 +268,7 @@ public interface IModel extends IRow {
      * @throws ClassNotFoundException   if the connection could not be opened
      * @throws InvalidKeyException      if the primary key could not be obtained
      */
-    IRowCollection belongsToMany(Class<? extends IModel> className, String table) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className, String table) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
 
     /**
      * Runs belongsToMany relation between the entities.
@@ -273,5 +280,5 @@ public interface IModel extends IRow {
      * @throws ClassNotFoundException   if the connection could not be opened
      * @throws InvalidKeyException      if the primary key could not be obtained
      */
-    IRowCollection belongsToMany(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
 }

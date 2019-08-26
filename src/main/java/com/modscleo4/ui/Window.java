@@ -14,9 +14,10 @@
  limitations under the License.
  */
 
-package app.ui;
+package com.modscleo4.ui;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Base Window class.
@@ -24,19 +25,11 @@ import javax.swing.*;
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
 public abstract class Window extends JFrame {
-    /**
-     * Creates a new Window instance.
-     */
-    public Window() {
-        super();
-    }
-
-    /**
-     * Creates a new Window instance.
-     *
-     * @param title the title of the window
-     */
-    public Window(String title) {
-        super(title);
+    protected void centerScreen() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension dialogSize = this.getSize();
+        int centerPosX = (screenSize.width - dialogSize.width) / 2;
+        int centerPosY = (screenSize.height - dialogSize.height) / 2;
+        setLocation(centerPosX, centerPosY);
     }
 }

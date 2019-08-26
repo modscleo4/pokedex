@@ -53,6 +53,14 @@ public class Table {
         this.tableName = tableName;
     }
 
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
     /**
      * Runs table SELECT in database.
      *
@@ -104,7 +112,7 @@ public class Table {
      * @throws ClassNotFoundException if the connection could not be opened
      */
     public IRowCollection where(String column, String comparator, Object value) throws SQLException, ClassNotFoundException {
-        String sql = String.format("SELECT * FROM %s WHERE %s %s ? LIMIT 1;", tableName, column, comparator);
+        String sql = String.format("SELECT * FROM %s WHERE %s %s ?;", tableName, column, comparator);
 
         List<Object> params = new ArrayList<Object>() {{
             add(value);

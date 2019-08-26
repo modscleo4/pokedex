@@ -17,8 +17,11 @@
 package app;
 
 import app.ui.MainWindow;
+import com.modscleo4.ui.ExceptionDialog;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * Main class of project.
@@ -29,10 +32,14 @@ public class Main {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            if (!new File(".env").exists()) {
+                throw new FileNotFoundException(".env not found.");
+            }
+
             new MainWindow().setVisible(true);
         } catch (Exception e) {
-            System.err.println("Unhandled exception");
-            e.printStackTrace();
+            ExceptionDialog.show(e);
         }
     }
 }

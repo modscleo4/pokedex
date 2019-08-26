@@ -19,6 +19,8 @@ package app.ui;
 import app.dao.PokemonDAO;
 import app.entity.Pokemon;
 import com.modscleo4.framework.entity.IModelCollection;
+import com.modscleo4.ui.ExceptionDialog;
+import com.modscleo4.ui.Window;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -42,14 +44,13 @@ public class MainWindow extends Window implements ActionListener {
     private JMenu menu;
     private JMenu help;
 
-    private JMenuItem menuTest;
+    private JMenuItem menuDetails;
     private JMenuItem menuExit;
 
     private JMenuItem helpAbout;
 
     public MainWindow() {
-        super("Trabalho");
-
+        setTitle("Trabalho");
         //setLayout(null);
         setSize(800, 600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -68,8 +69,10 @@ public class MainWindow extends Window implements ActionListener {
 
         table = new JTable(model);
         table.getTableHeader().setReorderingAllowed(false);
-        table.getColumnModel().getColumn(0).setMaxWidth(80);
-        table.getColumnModel().getColumn(0).setMinWidth(80);
+        table.getColumnModel().getColumn(0).setMaxWidth(60);
+        table.getColumnModel().getColumn(0).setMinWidth(60);
+        table.getColumnModel().getColumn(1).setMaxWidth(160);
+        table.getColumnModel().getColumn(1).setMinWidth(160);
 
         scrollPane = new JScrollPane(table);
         scrollPane.setViewportView(table);
@@ -82,9 +85,9 @@ public class MainWindow extends Window implements ActionListener {
         menu.setMnemonic('A');
         menuBar.add(menu);
 
-        menuTest = new JMenuItem("Teste");
-        menuTest.addActionListener(this);
-        menu.add(menuTest);
+        menuDetails = new JMenuItem("Detalhes");
+        menuDetails.addActionListener(this);
+        menu.add(menuDetails);
 
         menuExit = new JMenuItem("Sair");
         menuExit.addActionListener(this);
@@ -114,20 +117,20 @@ public class MainWindow extends Window implements ActionListener {
                 model.addRow(new Object[]{id, name, description});
             }
         } /* Ash */ catch/*um*/ (Exception e) {
-            System.out.println("Gotta catch 'em all");
+            ExceptionDialog.show(e);
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == menuTest) {
+        if (e.getSource() == menuDetails) {
             int row = table.getSelectedRow();
             if (row != -1) {
                 try {
                     Pokemon pokemon = pokemonDAO.find(row + 1);
                     new PokemonWindow(pokemon).setVisible(true);
                 } /* Ash */ catch/*um*/ (Exception ex) {
-                    System.out.println("Gotta catch 'em all");
+                    ExceptionDialog.show(ex);
                 }
             }
         } else if (e.getSource() == menuExit) {

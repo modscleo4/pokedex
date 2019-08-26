@@ -23,13 +23,13 @@ import java.security.InvalidKeyException;
 import java.sql.SQLException;
 
 /**
- * Category entity class.
+ * Ability entity class.
  *
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
-public class Category extends Model {
-    public Category() {
-        table = "categories";
+public class Ability extends Model {
+    public Ability() {
+        table = "abilities";
     }
 
     /**
@@ -44,20 +44,29 @@ public class Category extends Model {
     }
 
     /**
-     * Gets the Category id.
+     * Gets the Ability id.
      *
-     * @return the Category id
+     * @return the Ability id
      */
     public long getId() {
         return (long) this.get("id");
     }
 
     /**
-     * Gets the Category name.
+     * Gets the Ability name.
      *
-     * @return the Category name
+     * @return the Ability name
      */
     public String getName() {
         return (String) this.get("name");
+    }
+
+    /**
+     * Gets the Ability description.
+     *
+     * @return the Ability description
+     */
+    public String getDescription() {
+        return (String) this.get("description");
     }
 }

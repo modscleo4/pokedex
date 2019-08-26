@@ -26,6 +26,8 @@ import com.modscleo4.framework.dao.EntityDAO;
  */
 public class CategoryDAO extends EntityDAO<Category> {
     /**
+     * Creates a new Category DAO instance.
+     *
      * @throws IllegalArgumentException if the entity class could not be instantiated
      */
     public CategoryDAO() throws IllegalArgumentException {

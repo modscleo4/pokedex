@@ -20,7 +20,6 @@ package com.modscleo4.framework.callback;
  * Callback for Collection.map().
  *
  * @param <T> Collection type
- *
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
 public interface IMapCallback<T> {

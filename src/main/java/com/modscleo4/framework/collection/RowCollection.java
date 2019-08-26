@@ -26,6 +26,13 @@ import java.text.ParsePosition;
  * Row Collection class.
  */
 public class RowCollection extends Collection<IRow> implements IRowCollection {
+    private static boolean isNumeric(String str) {
+        NumberFormat formatter = NumberFormat.getInstance();
+        ParsePosition pos = new ParsePosition(0);
+        formatter.parse(str, pos);
+        return str.length() == pos.getIndex();
+    }
+
     @Override
     public IRowCollection where(IFilterCallback<IRow> callback) {
         ICollection<IRow> collection = super.filter(callback);
@@ -33,13 +40,6 @@ public class RowCollection extends Collection<IRow> implements IRowCollection {
         rowCollection.addAll(collection);
 
         return rowCollection;
-    }
-
-    private static boolean isNumeric(String str) {
-        NumberFormat formatter = NumberFormat.getInstance();
-        ParsePosition pos = new ParsePosition(0);
-        formatter.parse(str, pos);
-        return str.length() == pos.getIndex();
     }
 
     @Override

@@ -31,6 +31,13 @@ import java.text.ParsePosition;
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
 public class ModelCollection<T extends IModel> extends Collection<T> implements IModelCollection<T> {
+    private static boolean isNumeric(String str) {
+        NumberFormat formatter = NumberFormat.getInstance();
+        ParsePosition pos = new ParsePosition(0);
+        formatter.parse(str, pos);
+        return str.length() == pos.getIndex();
+    }
+
     @Override
     public IModelCollection<T> where(IFilterCallback<T> callback) {
         ICollection<T> collection = super.filter(callback);
@@ -38,13 +45,6 @@ public class ModelCollection<T extends IModel> extends Collection<T> implements 
         rowCollection.addAll(collection);
 
         return rowCollection;
-    }
-
-    private static boolean isNumeric(String str) {
-        NumberFormat formatter = NumberFormat.getInstance();
-        ParsePosition pos = new ParsePosition(0);
-        formatter.parse(str, pos);
-        return str.length() == pos.getIndex();
     }
 
     @Override

@@ -16,7 +16,7 @@
 
 package app.entity;
 
-import com.modscleo4.framework.collection.IRow;
+import com.modscleo4.framework.entity.IModelCollection;
 import com.modscleo4.framework.entity.Model;
 
 import javax.imageio.ImageIO;
@@ -32,24 +32,8 @@ import java.sql.SQLException;
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
 public class Pokemon extends Model {
-    static {
-        table = "pokemon";
-    }
-
-    /**
-     * Creates a new Pokemon instance.
-     */
     public Pokemon() {
-        super();
-    }
-
-    /**
-     * Creates a new Pokemon instance.
-     *
-     * @param row the IRow to copy data from
-     */
-    public Pokemon(IRow row) {
-        super(row);
+        table = "pokemon";
     }
 
     /**
@@ -89,6 +73,32 @@ public class Pokemon extends Model {
      */
     public Category category() throws IllegalArgumentException, InvalidKeyException, SQLException, ClassNotFoundException {
         return (Category) this.belongsTo(Category.class);
+    }
+
+    /**
+     * Gets the Pokemon Genders.
+     *
+     * @return the Pokemon Genders
+     * @throws IllegalArgumentException if the related entity could not be instantiated
+     * @throws SQLException             if some DB error occurred
+     * @throws ClassNotFoundException   if the connection could not be opened
+     * @throws InvalidKeyException      if the primary key could not be obtained
+     */
+    public IModelCollection<Gender> genders() throws SQLException, InvalidKeyException, ClassNotFoundException {
+        return (IModelCollection<Gender>) this.belongsToMany(Gender.class);
+    }
+
+    /**
+     * Gets the Pokemon Abilities.
+     *
+     * @return the Pokemon Abilities
+     * @throws IllegalArgumentException if the related entity could not be instantiated
+     * @throws SQLException             if some DB error occurred
+     * @throws ClassNotFoundException   if the connection could not be opened
+     * @throws InvalidKeyException      if the primary key could not be obtained
+     */
+    public IModelCollection<Ability> abilities() throws SQLException, InvalidKeyException, ClassNotFoundException {
+        return (IModelCollection<Ability>) this.belongsToMany(Ability.class);
     }
 
     /**

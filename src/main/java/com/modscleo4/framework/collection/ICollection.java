@@ -26,7 +26,6 @@ import java.util.List;
  * Collection interface.
  *
  * @param <T> the type of the Collection
- *
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
 public interface ICollection<T> extends List<T> {
@@ -45,7 +44,7 @@ public interface ICollection<T> extends List<T> {
     T last();
 
     /**
-     * Invokes callback function for each Collection element and a new Collecton as result.
+     * Invokes callback function for each Collection element and a new Collection as result.
      *
      * @param callback callback function
      * @return a new Collection as result

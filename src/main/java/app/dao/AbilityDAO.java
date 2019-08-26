@@ -14,15 +14,24 @@
  limitations under the License.
  */
 
-package com.modscleo4.framework.callback;
+package app.dao;
+
+import app.entity.Ability;
+import com.modscleo4.framework.dao.EntityDAO;
+import com.modscleo4.framework.entity.IModel;
 
 /**
- * Callback for Collection.reduce().
+ * Pokemon category DAO class.
  *
- * @param <T>  Collection type
- * @param <VT> Accumulator type
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
-public interface IReduceCallback<T, VT> {
-    VT method(VT prevVal, T row);
+public class AbilityDAO extends EntityDAO<Ability> {
+    /**
+     * Creates a new Ability DAO instance.
+     *
+     * @throws IllegalArgumentException if the entity class could not be instantiated
+     */
+    public AbilityDAO(Class<? extends IModel> model) throws IllegalArgumentException {
+        super(model);
+    }
 }

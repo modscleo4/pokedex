@@ -93,9 +93,10 @@ public abstract class EntityDAO<T extends IModel> implements IEntityDAO<T> {
         IModelCollection<T> models = new ModelCollection<>();
         for (IRow row : rc) {
             try {
-                IModel model = this.getModelClass().getDeclaredConstructor(IRow.class).newInstance(row);
+                IModel model = this.getModelClass().getDeclaredConstructor().newInstance();
+                model.fromRow(row);
                 models.add((T) model);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
                 throw new IllegalArgumentException("The entity class could not be instantiated.");
             }
         }
@@ -112,7 +113,9 @@ public abstract class EntityDAO<T extends IModel> implements IEntityDAO<T> {
         IRow row = getDatabaseTable().find(this.getKeyName(), id);
 
         try {
-            return (T) this.getModelClass().getDeclaredConstructor(IRow.class).newInstance(row);
+            IModel model = this.getModelClass().getDeclaredConstructor().newInstance();
+            model.fromRow(row);
+            return (T) model;
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new IllegalArgumentException("The entity class could not be instantiated.");
         }
@@ -124,7 +127,8 @@ public abstract class EntityDAO<T extends IModel> implements IEntityDAO<T> {
         IModelCollection<T> models = new ModelCollection<>();
         for (IRow row : rc) {
             try {
-                IModel model = this.getModelClass().getDeclaredConstructor(IRow.class).newInstance(row);
+                IModel model = this.getModelClass().getDeclaredConstructor().newInstance();
+                model.fromRow(row);
                 models.add((T) model);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
                 throw new IllegalArgumentException("The entity class could not be instantiated.");

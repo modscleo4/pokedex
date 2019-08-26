@@ -14,15 +14,22 @@
  limitations under the License.
  */
 
-package com.modscleo4.framework.callback;
+package com.modscleo4.ui;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * Callback for Collection.reduce().
+ * Base Dialog class.
  *
- * @param <T>  Collection type
- * @param <VT> Accumulator type
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
-public interface IReduceCallback<T, VT> {
-    VT method(VT prevVal, T row);
+public abstract class Dialog extends JDialog {
+    protected void centerScreen() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension dialogSize = this.getSize();
+        int centerPosX = (screenSize.width - dialogSize.width) / 2;
+        int centerPosY = (screenSize.height - dialogSize.height) / 2;
+        setLocation(centerPosX, centerPosY);
+    }
 }
