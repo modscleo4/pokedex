@@ -16,6 +16,8 @@
 
 package com.modscleo4.framework.database;
 
+import com.modscleo4.framework.database.sql.QueryBuilder;
+
 import java.sql.*;
 import java.util.List;
 
@@ -34,6 +36,11 @@ public class Connection {
      * The JDBC connection adapter.
      */
     private java.sql.Connection connection;
+
+    /**
+     * The Query Builder object.
+     */
+    private QueryBuilder queryBuilder;
 
     /**
      * The JDBC url.
@@ -70,6 +77,7 @@ public class Connection {
      */
     public Connection(Drivers driver, String host, String port, String db, String username, String password) {
         this.driver = new Driver(driver);
+        this.queryBuilder = new QueryBuilder(this.getDriver());
         db = db.trim();
 
         if (driver == Drivers.SQLITE) {
@@ -147,6 +155,15 @@ public class Connection {
      */
     public Driver getDriver() {
         return driver;
+    }
+
+    /**
+     * Gets the Query Builder object.
+     *
+     * @return the Query Builder object.
+     */
+    public QueryBuilder getQueryBuilder() {
+        return queryBuilder;
     }
 
     /**

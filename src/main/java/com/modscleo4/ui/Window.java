@@ -24,7 +24,12 @@ import java.awt.*;
  *
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
-public abstract class Window extends JFrame {
+public class Window extends JFrame {
+    protected void setContentView(String xml) {
+        removeAll();
+
+    }
+
     protected void centerScreen() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension dialogSize = this.getSize();

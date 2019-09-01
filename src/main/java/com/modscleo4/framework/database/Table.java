@@ -19,6 +19,7 @@ package com.modscleo4.framework.database;
 import com.modscleo4.framework.collection.ICollection;
 import com.modscleo4.framework.collection.IRow;
 import com.modscleo4.framework.collection.IRowCollection;
+import com.modscleo4.framework.database.sql.QueryBuilder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -69,7 +70,29 @@ public class Table {
      * @throws ClassNotFoundException if the connection could not be opened
      */
     public IRowCollection select() throws SQLException, ClassNotFoundException {
+        QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
+
         String sql = String.format("SELECT * FROM %s;", tableName);
+        ResultSet rs = connection.query(sql);
+
+        return IRowCollection.fromResultSet(rs);
+    }
+
+    /**
+     * Runs table SELECT with pagination in database.
+     *
+     * @param page the desired page
+     * @return all entries in database
+     * @throws SQLException           if some DB error occurred
+     * @throws ClassNotFoundException if the connection could not be opened
+     */
+    public IRowCollection selectPaginated(int page) throws SQLException, ClassNotFoundException {
+        QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
+
+        int limit = 10;
+        int offset = (page - 1) * limit;
+
+        String sql = String.format("SELECT * FROM %s LIMIT %d OFFSET %d;", tableName, limit, offset);
         ResultSet rs = connection.query(sql);
 
         return IRowCollection.fromResultSet(rs);
@@ -86,6 +109,8 @@ public class Table {
      */
     public IRow find(String primaryKey, Object id) throws SQLException, ClassNotFoundException {
         if (!primaryKey.equals("")) {
+            QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
+
             String sql = String.format("SELECT * FROM %s WHERE %s = ? LIMIT 1;", tableName, primaryKey);
 
             List<Object> params = new ArrayList<Object>() {{
@@ -112,6 +137,8 @@ public class Table {
      * @throws ClassNotFoundException if the connection could not be opened
      */
     public IRowCollection where(String column, String comparator, Object value) throws SQLException, ClassNotFoundException {
+        QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
+
         String sql = String.format("SELECT * FROM %s WHERE %s %s ?;", tableName, column, comparator);
 
         List<Object> params = new ArrayList<Object>() {{
@@ -131,6 +158,8 @@ public class Table {
      * @throws ClassNotFoundException if the connection could not be opened
      */
     public void store(String primaryKey, IRow data) throws SQLException, ClassNotFoundException {
+        QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
+
         String columns = String.join(", ", data.keySet());
 
         String[] arr = new String[data.keySet().size()];
@@ -154,6 +183,8 @@ public class Table {
      * @throws ClassNotFoundException if the connection could not be opened
      */
     public int update(String primaryKey, IRow data) throws SQLException, ClassNotFoundException {
+        QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
+
         String[] arr = new String[data.keySet().size()];
         Arrays.fill(arr, "%s = ?");
         String updateString = String.format(String.join(", ", arr), data.keySet().toArray());
@@ -161,9 +192,9 @@ public class Table {
         String sql = String.format("UPDATE %s SET %s WHERE %s = ?;", tableName, updateString, primaryKey);
 
         List<Object> params = new ArrayList<Object>() {{
-            for (String col : data.keySet()) {
+            data.keySet().forEach(col -> {
                 add(data.get(col));
-            }
+            });
 
             add(data.get(primaryKey));
         }};

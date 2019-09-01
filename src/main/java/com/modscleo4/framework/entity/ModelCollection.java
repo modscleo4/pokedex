@@ -18,7 +18,6 @@ package com.modscleo4.framework.entity;
 
 import com.modscleo4.framework.callback.IFilterCallback;
 import com.modscleo4.framework.collection.Collection;
-import com.modscleo4.framework.collection.ICollection;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -40,17 +39,16 @@ public class ModelCollection<T extends IModel> extends Collection<T> implements 
 
     @Override
     public IModelCollection<T> where(IFilterCallback<T> callback) {
-        ICollection<T> collection = super.filter(callback);
-        IModelCollection<T> rowCollection = new ModelCollection<>();
-        rowCollection.addAll(collection);
+        IModelCollection<T> result = new ModelCollection<>();
+        result.addAll(super.filter(callback));
 
-        return rowCollection;
+        return result;
     }
 
     @Override
     public IModelCollection<T> sortBy(String column) {
-        IModelCollection<T> rowCollection = this;
-        rowCollection.sort((o1, o2) -> {
+        IModelCollection<T> result = this;
+        result.sort((o1, o2) -> {
             if (o1 == null || o2 == null) {
                 return 0;
             }
@@ -64,13 +62,13 @@ public class ModelCollection<T extends IModel> extends Collection<T> implements 
             }
         });
 
-        return rowCollection;
+        return result;
     }
 
     @Override
     public IModelCollection<T> sortByDesc(String column) {
-        IModelCollection<T> rowCollection = this;
-        rowCollection.sort((o1, o2) -> {
+        IModelCollection<T> result = this;
+        result.sort((o1, o2) -> {
             if (o1 == null || o2 == null) {
                 return 0;
             }
@@ -84,6 +82,21 @@ public class ModelCollection<T extends IModel> extends Collection<T> implements 
             }
         });
 
-        return rowCollection;
+        return result;
+    }
+
+    @Override
+    public IModelCollection<T> page(int page) {
+        IModelCollection<T> result = new ModelCollection<>();
+        int limit = 10;
+        int offset = (page - 1) * limit;
+
+        for (int i = 0; i < limit; i++) {
+            if (i + offset < this.size()) {
+                result.add(this.get(i + offset));
+            }
+        }
+
+        return result;
     }
 }

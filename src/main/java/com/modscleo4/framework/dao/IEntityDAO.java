@@ -38,6 +38,13 @@ public interface IEntityDAO<T extends IModel> {
     String getTable();
 
     /**
+     * Gets the fake table name.
+     *
+     * @return the fake table name
+     */
+    String getFakeTable();
+
+    /**
      * Gets the Table object.
      *
      * @return the Table object of the class
@@ -82,6 +89,17 @@ public interface IEntityDAO<T extends IModel> {
      * @throws IllegalArgumentException if the entity could not be instantiated
      */
     IModelCollection<T> all() throws IllegalArgumentException, SQLException, ClassNotFoundException;
+
+    /**
+     * Gets all entities from database with pagination.
+     *
+     * @param page the desired page
+     * @return all entities from database with pagination
+     * @throws SQLException             if some DB error occurred
+     * @throws ClassNotFoundException   if the connection could not be opened
+     * @throws IllegalArgumentException if the entity could not be instantiated
+     */
+    IModelCollection<T> page(int page) throws IllegalArgumentException, SQLException, ClassNotFoundException;
 
     /**
      * Searches for some entity by primary key in database.

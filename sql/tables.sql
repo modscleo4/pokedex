@@ -19,12 +19,12 @@ CREATE TABLE categories
 
 CREATE TABLE pokemon
 (
-    id             BIGSERIAL     NOT NULL PRIMARY KEY,
-    name           VARCHAR(100)  NOT NULL UNIQUE,
-    description    TEXT          NOT NULL,
-    height         NUMERIC(5, 2) NOT NULL,
-    category_id    BIGINT        NOT NULL REFERENCES categories,
-    weight         NUMERIC(5, 2) NOT NULL,
+    id             BIGSERIAL    NOT NULL PRIMARY KEY,
+    name           VARCHAR(100) NOT NULL UNIQUE,
+    description    TEXT         NOT NULL,
+    height         FLOAT        NOT NULL,
+    category_id    BIGINT       NOT NULL REFERENCES categories,
+    weight         FLOAT        NOT NULL,
     predecessor_id BIGINT DEFAULT NULL REFERENCES pokemon,
     successor_id   BIGINT DEFAULT NULL REFERENCES pokemon
 );
@@ -70,7 +70,7 @@ CREATE TABLE types
 (
     id    BIGSERIAL    NOT NULL PRIMARY KEY,
     name  VARCHAR(100) NOT NULL UNIQUE,
-    color VARCHAR(20)  NOT NULL
+    color VARCHAR(7)   NOT NULL
 );
 
 CREATE TABLE pokemon_has_types

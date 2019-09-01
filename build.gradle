@@ -29,6 +29,7 @@ jar {
 }
 
 dependencies {
-    compile 'io.github.cdimascio:java-dotenv:5.1.1'
+    compile group: 'io.github.cdimascio', name: 'java-dotenv', version: '+'
+    compile group: 'org.postgresql', name: 'postgresql', version: '+'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

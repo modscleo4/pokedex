@@ -129,24 +129,6 @@ public class Driver {
         return null;
     }
 
-    /**
-     * Gets the SQL INSERT command for the specific DBMS.
-     *
-     * @return the SQL INSERT command for the specific DBMS
-     */
-    public String select() {
-        switch (getName()) {
-            case "sqlite":
-            case "mysql":
-            case "postgresql":
-            case "sqlserver":
-            case "as400":
-                return "SELECT * FROM %s";
-            default:
-                return "";
-        }
-    }
-
     @Override
     public String toString() {
         return name;

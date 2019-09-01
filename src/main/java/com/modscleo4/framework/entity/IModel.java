@@ -37,6 +37,13 @@ public interface IModel extends IRow {
     String getTable();
 
     /**
+     * Gets the fake table name.
+     *
+     * @return the fake table name
+     */
+    String getFakeTable();
+
+    /**
      * Gets the Connection object.
      *
      * @return the Connection object of the class
@@ -92,7 +99,7 @@ public interface IModel extends IRow {
      * @throws SQLException             if some DB error occurred
      * @throws ClassNotFoundException   if the connection could not be opened
      */
-    IModel hasOne(Class<? extends IModel> className, String foreignKey, String localKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModel hasOne(Class<? extends IModel> className, String foreignKey, String localKey) throws InvalidKeyException, SQLException, ClassNotFoundException;
 
     /**
      * Runs hasOne relation between the entities.
@@ -104,7 +111,7 @@ public interface IModel extends IRow {
      * @throws SQLException             if some DB error occurred
      * @throws ClassNotFoundException   if the connection could not be opened
      */
-    IModel hasOne(Class<? extends IModel> className, String foreignKey) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModel hasOne(Class<? extends IModel> className, String foreignKey) throws ClassNotFoundException, InvalidKeyException, SQLException;
 
     /**
      * Runs hasOne relation between the entities.
@@ -115,7 +122,7 @@ public interface IModel extends IRow {
      * @throws SQLException             if some DB error occurred
      * @throws ClassNotFoundException   if the connection could not be opened
      */
-    IModel hasOne(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException;
+    IModel hasOne(Class<? extends IModel> className) throws ClassNotFoundException, InvalidKeyException, SQLException;
 
     /**
      * Runs hasMany relation between the entities.

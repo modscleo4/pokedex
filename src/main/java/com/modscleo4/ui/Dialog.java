@@ -24,7 +24,12 @@ import java.awt.*;
  *
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
-public abstract class Dialog extends JDialog {
+public class Dialog extends JDialog {
+    protected void setContentView(String xml) {
+        removeAll();
+
+    }
+
     protected void centerScreen() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension dialogSize = this.getSize();

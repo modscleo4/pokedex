@@ -14,24 +14,20 @@
  limitations under the License.
  */
 
-package app.dao;
-
-import app.entity.Ability;
-import com.modscleo4.framework.dao.EntityDAO;
-import com.modscleo4.framework.entity.IModel;
+package app.entity;
 
 /**
- * Pokemon category DAO class.
+ * Weakness entity class.
  *
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
-public class AbilityDAO extends EntityDAO<Ability> {
-    /**
-     * Creates a new Ability DAO instance.
-     *
-     * @throws IllegalArgumentException if the entity class could not be instantiated
-     */
-    public AbilityDAO(Class<? extends IModel> model) throws IllegalArgumentException {
-        super(model);
+public class Weakness extends Type {
+    public Weakness() {
+        super();
+        fakeTable = "weaknesses";
+    }
+
+    public int getEffectiveness() {
+        return (int) this.get("effectiveness");
     }
 }

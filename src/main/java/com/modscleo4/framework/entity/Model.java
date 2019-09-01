@@ -37,18 +37,27 @@ public abstract class Model extends Row implements IModel {
      * The Connection instance.
      */
     protected Connection connection = DB.getDefault();
+
     /**
      * The table name.
      */
     protected String table = "";
+
+    /**
+     * The fake table name.
+     */
+    protected String fakeTable = "";
+
     /**
      * The table primary key column name.
      */
     protected String primaryKey = "id";
+
     /**
      * If the primary key increments.
      */
     protected boolean incrementing = true;
+
     /**
      * The Table object.
      */
@@ -57,6 +66,11 @@ public abstract class Model extends Row implements IModel {
     @Override
     public String getTable() {
         return table;
+    }
+
+    @Override
+    public String getFakeTable() {
+        return fakeTable;
     }
 
     @Override
@@ -79,7 +93,12 @@ public abstract class Model extends Row implements IModel {
             throw new InvalidKeyException("There is no primary key.");
         }
 
-        return String.format("%s_%s", this.getClass().getSimpleName().toLowerCase(), this.getKeyName());
+        String className = this.getClass().getSimpleName().toLowerCase();
+        if (!getFakeTable().equals("")) {
+            className = this.getClass().getSuperclass().getSimpleName().toLowerCase();
+        }
+
+        return String.format("%s_%s", className, this.getKeyName());
     }
 
     @Override
@@ -107,12 +126,12 @@ public abstract class Model extends Row implements IModel {
     }
 
     @Override
-    public IModel hasOne(Class<? extends IModel> className, String foreignKey, String localKey) throws IllegalArgumentException, SQLException, ClassNotFoundException {
+    public IModel hasOne(Class<? extends IModel> className, String foreignKey, String localKey) throws InvalidKeyException, SQLException, ClassNotFoundException {
         try {
             IModel entity = className.getDeclaredConstructor().newInstance();
 
             if (foreignKey == null) {
-                foreignKey = getTable();
+                foreignKey = getForeignKey();
             }
 
             if (localKey == null) {
@@ -133,12 +152,12 @@ public abstract class Model extends Row implements IModel {
     }
 
     @Override
-    public IModel hasOne(Class<? extends IModel> className, String foreignKey) throws IllegalArgumentException, SQLException, ClassNotFoundException {
+    public IModel hasOne(Class<? extends IModel> className, String foreignKey) throws ClassNotFoundException, InvalidKeyException, SQLException {
         return this.hasOne(className, foreignKey, null);
     }
 
     @Override
-    public IModel hasOne(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException {
+    public IModel hasOne(Class<? extends IModel> className) throws ClassNotFoundException, InvalidKeyException, SQLException {
         return this.hasOne(className, null, null);
     }
 
@@ -234,7 +253,12 @@ public abstract class Model extends Row implements IModel {
             }
 
             if (table == null) {
-                table = String.format("%s_has_%s", getClass().getSimpleName().toLowerCase(), entity.getTable());
+                String t = entity.getFakeTable();
+                if (t.equals("")) {
+                    t = entity.getTable();
+                }
+
+                table = String.format("%s_has_%s", getClass().getSimpleName().toLowerCase(), t);
             }
 
             if (parentKey == null) {
@@ -254,6 +278,14 @@ public abstract class Model extends Row implements IModel {
                     related.add(null);
                     continue;
                 }
+
+                String finalForeignPivotKey = foreignPivotKey;
+                String finalRelatedPivotKey = relatedPivotKey;
+                s.forEach((i, v) -> {
+                    if (!i.equals(finalForeignPivotKey) && !i.equals(finalRelatedPivotKey)) {
+                        row.put(i, v);
+                    }
+                });
 
                 IModel e = className.getDeclaredConstructor().newInstance();
                 e.fromRow(row);

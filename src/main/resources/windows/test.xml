@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window title="Test" width="800" height="600">
+    <JPanel background="#000000">
+
+    </JPanel>
+</Window>

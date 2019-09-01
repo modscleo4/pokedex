@@ -30,7 +30,7 @@ public interface IModelCollection<T extends IModel> extends ICollection<T> {
      * Filters the ModelCollection.
      *
      * @param callback callback function
-     * @return a new ModelCollection as result
+     * @return a new IModelCollection as result
      */
     IModelCollection<T> where(IFilterCallback<T> callback);
 
@@ -38,7 +38,7 @@ public interface IModelCollection<T extends IModel> extends ICollection<T> {
      * Sorts the ModelCollection ascending.
      *
      * @param column the column to sort
-     * @return a new ModelCollection as result
+     * @return a new IModelCollection as result
      */
     IModelCollection<T> sortBy(String column);
 
@@ -46,7 +46,15 @@ public interface IModelCollection<T extends IModel> extends ICollection<T> {
      * Sorts the ModelCollection descending.
      *
      * @param column the column to sort
-     * @return a new ModelCollection as result
+     * @return a new IModelCollection as result
      */
     IModelCollection<T> sortByDesc(String column);
+
+    /**
+     * Gets all entities from database with pagination.
+     *
+     * @param page the desired page
+     * @return a new IModelCollection as result
+     */
+    IModelCollection<T> page(int page);
 }

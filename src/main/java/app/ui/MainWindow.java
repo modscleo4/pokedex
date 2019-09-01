@@ -16,67 +16,60 @@
 
 package app.ui;
 
-import app.dao.PokemonDAO;
 import app.entity.Pokemon;
+import app.ui.partials.PokemonCard;
 import com.modscleo4.framework.entity.IModelCollection;
 import com.modscleo4.ui.ExceptionDialog;
 import com.modscleo4.ui.Window;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
+
+import static app.dao.AppDAO.pokemonDAO;
 
 /**
  * Pokemon list window class.
  *
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
-public class MainWindow extends Window implements ActionListener {
-    private PokemonDAO pokemonDAO = new PokemonDAO();
+public class MainWindow extends Window implements ActionListener, ComponentListener, WindowStateListener {
+    private int page = 1;
 
-    private DefaultTableModel model;
-    private JTable table;
+    private IModelCollection<Pokemon> pokemons;
+
+    private GridLayout pokemonListLayout;
+    private JPanel pokemonList;
     private JScrollPane scrollPane;
+
+    private JPanel loadMorePanel;
+    private JButton loadMore;
 
     private JMenuBar menuBar;
 
     private JMenu menu;
     private JMenu help;
 
-    private JMenuItem menuDetails;
     private JMenuItem menuExit;
 
     private JMenuItem helpAbout;
 
     public MainWindow() {
-        setTitle("Trabalho");
-        //setLayout(null);
+        setTitle("Pokedex");
         setSize(800, 600);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new Dimension(800, 600));
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        addComponentListener(this);
+        addWindowStateListener(this);
 
-        model = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        pokemonListLayout = new GridLayout(0, 4, 5, 5);
+        pokemonList = new JPanel(pokemonListLayout);
+        pokemonList.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        model.addColumn("ID");
-        model.addColumn("Nome");
-        model.addColumn("Descrição");
-
-        table = new JTable(model);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.getColumnModel().getColumn(0).setMaxWidth(60);
-        table.getColumnModel().getColumn(0).setMinWidth(60);
-        table.getColumnModel().getColumn(1).setMaxWidth(160);
-        table.getColumnModel().getColumn(1).setMinWidth(160);
-
-        scrollPane = new JScrollPane(table);
-        scrollPane.setViewportView(table);
-        scrollPane.setBounds(10, 10, 450, 190);
+        scrollPane = new JScrollPane(pokemonList);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         add(scrollPane);
 
         menuBar = new JMenuBar();
@@ -85,14 +78,8 @@ public class MainWindow extends Window implements ActionListener {
         menu.setMnemonic('A');
         menuBar.add(menu);
 
-        menuDetails = new JMenuItem("Detalhes");
-        menuDetails.addActionListener(this);
-        menu.add(menuDetails);
-
         menuExit = new JMenuItem("Sair");
         menuExit.addActionListener(this);
-
-        menu.addSeparator();
         menu.add(menuExit);
 
         help = new JMenu("Ajuda");
@@ -103,19 +90,36 @@ public class MainWindow extends Window implements ActionListener {
         helpAbout.addActionListener(this);
         help.add(helpAbout);
 
+        loadMorePanel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        loadMore = new JButton("Carregar mais");
+        loadMore.addActionListener(this);
+        loadMorePanel.add(loadMore, constraints);
+
+        try {
+            this.pokemons = pokemonDAO.all().sortBy("id");
+        } /* Ash */ catch/*um*/ (Exception e) {
+            ExceptionDialog.show(e);
+        }
+
         loadPokemons();
     }
 
     private void loadPokemons() {
         try {
-            IModelCollection<Pokemon> pokemons = pokemonDAO.all().sortBy("id");
-            for (Pokemon pokemon : pokemons) {
-                long id = pokemon.getId();
-                String name = pokemon.getName();
-                String description = pokemon.getDescription();
+            pokemonList.remove(loadMorePanel);
 
-                model.addRow(new Object[]{id, name, description});
+            IModelCollection<Pokemon> pokemons = this.pokemons.page(this.page++);
+            for (Pokemon pokemon : pokemons) {
+                PokemonCard card = new PokemonCard(pokemon);
+                pokemonList.add(card);
             }
+
+            if (pokemons.size() != 0 && this.pokemons.page(this.page).size() != 0) {
+                pokemonList.add(loadMorePanel);
+            }
+
+            pokemonList.updateUI();
         } /* Ash */ catch/*um*/ (Exception e) {
             ExceptionDialog.show(e);
         }
@@ -123,21 +127,42 @@ public class MainWindow extends Window implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == menuDetails) {
-            int row = table.getSelectedRow();
-            if (row != -1) {
-                try {
-                    Pokemon pokemon = pokemonDAO.find(row + 1);
-                    new PokemonWindow(pokemon).setVisible(true);
-                } /* Ash */ catch/*um*/ (Exception ex) {
-                    ExceptionDialog.show(ex);
-                }
-            }
-        } else if (e.getSource() == menuExit) {
+        if (e.getSource() == menuExit) {
             setVisible(false);
             dispose();
         } else if (e.getSource() == helpAbout) {
             JOptionPane.showMessageDialog(this, "Trabalho", "Trabalho", JOptionPane.INFORMATION_MESSAGE);
+        } else if (e.getSource() == loadMore) {
+            loadPokemons();
         }
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        int width = this.getWidth();
+        int cols = width / 150 - 1;
+        pokemonListLayout.setColumns(cols);
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void windowStateChanged(WindowEvent e) {
+        int width = this.getWidth();
+        int cols = width / 150 - 1;
+        pokemonListLayout.setColumns(cols);
     }
 }

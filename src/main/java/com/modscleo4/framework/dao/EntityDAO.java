@@ -33,7 +33,7 @@ import java.sql.SQLException;
  * @param <T> the entity class
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
-public abstract class EntityDAO<T extends IModel> implements IEntityDAO<T> {
+public class EntityDAO<T extends IModel> implements IEntityDAO<T> {
     /**
      * The entity of the DAO
      */
@@ -59,17 +59,18 @@ public abstract class EntityDAO<T extends IModel> implements IEntityDAO<T> {
     }
 
     @Override
+    public String getFakeTable() {
+        return entity.getFakeTable();
+    }
+
+    @Override
     public Table getDatabaseTable() {
         return entity.getDatabaseTable();
     }
 
     @Override
     public String getForeignKey() throws InvalidKeyException {
-        if (this.getKeyName() == null) {
-            throw new InvalidKeyException("There is no primary key.");
-        }
-
-        return String.format("%s_%s", this.getClass().getSimpleName().toLowerCase(), this.getKeyName());
+        return entity.getForeignKey();
     }
 
     @Override
@@ -91,7 +92,7 @@ public abstract class EntityDAO<T extends IModel> implements IEntityDAO<T> {
     public IModelCollection<T> all() throws IllegalArgumentException, SQLException, ClassNotFoundException {
         IRowCollection rc = getDatabaseTable().select();
         IModelCollection<T> models = new ModelCollection<>();
-        for (IRow row : rc) {
+        rc.forEach(row -> {
             try {
                 IModel model = this.getModelClass().getDeclaredConstructor().newInstance();
                 model.fromRow(row);
@@ -99,7 +100,24 @@ public abstract class EntityDAO<T extends IModel> implements IEntityDAO<T> {
             } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
                 throw new IllegalArgumentException("The entity class could not be instantiated.");
             }
-        }
+        });
+
+        return models;
+    }
+
+    @Override
+    public IModelCollection<T> page(int page) throws IllegalArgumentException, SQLException, ClassNotFoundException {
+        IRowCollection rc = getDatabaseTable().selectPaginated(page);
+        IModelCollection<T> models = new ModelCollection<>();
+        rc.forEach(row -> {
+            try {
+                IModel model = this.getModelClass().getDeclaredConstructor().newInstance();
+                model.fromRow(row);
+                models.add((T) model);
+            } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
+                throw new IllegalArgumentException("The entity class could not be instantiated.");
+            }
+        });
 
         return models;
     }
@@ -125,7 +143,7 @@ public abstract class EntityDAO<T extends IModel> implements IEntityDAO<T> {
     public IModelCollection<T> where(String column, String comparator, Object value) throws IllegalArgumentException, SQLException, ClassNotFoundException {
         IRowCollection rc = getDatabaseTable().where(column, comparator, value);
         IModelCollection<T> models = new ModelCollection<>();
-        for (IRow row : rc) {
+        rc.forEach(row -> {
             try {
                 IModel model = this.getModelClass().getDeclaredConstructor().newInstance();
                 model.fromRow(row);
@@ -133,7 +151,7 @@ public abstract class EntityDAO<T extends IModel> implements IEntityDAO<T> {
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
                 throw new IllegalArgumentException("The entity class could not be instantiated.");
             }
-        }
+        });
 
         return models;
     }

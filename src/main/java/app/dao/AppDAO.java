@@ -16,22 +16,19 @@
 
 package app.dao;
 
-import app.entity.Gender;
+import app.entity.*;
 import com.modscleo4.framework.dao.EntityDAO;
-import com.modscleo4.framework.entity.IModel;
 
 /**
- * Gender DAO class.
+ * Use this file to define all your DAO for the application
  *
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
-public class GenderDAO extends EntityDAO<Gender> {
-    /**
-     * Creates a new Pokemon DAO instance.
-     *
-     * @throws IllegalArgumentException if the entity class could not be instantiated
-     */
-    public GenderDAO(Class<? extends IModel> model) throws IllegalArgumentException {
-        super(model);
-    }
+public class AppDAO {
+    public static EntityDAO<Pokemon> pokemonDAO = new EntityDAO<>(Pokemon.class);
+    public static EntityDAO<Ability> abilityDAO = new EntityDAO<>(Ability.class);
+    public static EntityDAO<Category> categoryDAO = new EntityDAO<>(Category.class);
+    public static EntityDAO<Gender> genderDAO = new EntityDAO<>(Gender.class);
+    public static EntityDAO<Stats> statsDAO = new EntityDAO<>(Stats.class);
+    public static EntityDAO<Type> typeDAO = new EntityDAO<>(Type.class);
 }

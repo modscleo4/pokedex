@@ -31,6 +31,9 @@ build/
 # Dotenv #
 .env
 
+# Images #
+images/
+
 # OS generated files #
 ######################
 .DS_Store

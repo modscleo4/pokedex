@@ -21,8 +21,12 @@ import com.modscleo4.framework.entity.Model;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.security.InvalidKeyException;
 import java.sql.SQLException;
 
@@ -102,6 +106,44 @@ public class Pokemon extends Model {
     }
 
     /**
+     * Gets the Pokemon Stats.
+     *
+     * @return the Pokemon Stats
+     * @throws IllegalArgumentException if the related entity could not be instantiated
+     * @throws SQLException             if some DB error occurred
+     * @throws ClassNotFoundException   if the connection could not be opened
+     */
+    public Stats stats() throws SQLException, InvalidKeyException, ClassNotFoundException {
+        return (Stats) this.hasOne(Stats.class);
+    }
+
+    /**
+     * Gets the Pokemon Types.
+     *
+     * @return the Pokemon Types
+     * @throws IllegalArgumentException if the related entity could not be instantiated
+     * @throws SQLException             if some DB error occurred
+     * @throws ClassNotFoundException   if the connection could not be opened
+     * @throws InvalidKeyException      if the primary key could not be obtained
+     */
+    public IModelCollection<Type> types() throws SQLException, InvalidKeyException, ClassNotFoundException {
+        return (IModelCollection<Type>) this.belongsToMany(Type.class);
+    }
+
+    /**
+     * Gets the Pokemon Weaknesses.
+     *
+     * @return the Pokemon Weaknesses
+     * @throws IllegalArgumentException if the related entity could not be instantiated
+     * @throws SQLException             if some DB error occurred
+     * @throws ClassNotFoundException   if the connection could not be opened
+     * @throws InvalidKeyException      if the primary key could not be obtained
+     */
+    public IModelCollection<Weakness> weaknesses() throws SQLException, InvalidKeyException, ClassNotFoundException {
+        return (IModelCollection<Weakness>) this.belongsToMany(Weakness.class);
+    }
+
+    /**
      * Gets the Pokemon id.
      *
      * @return the Pokemon id
@@ -133,8 +175,8 @@ public class Pokemon extends Model {
      *
      * @return the Pokemon height
      */
-    public BigDecimal getHeight() {
-        return (BigDecimal) this.get("height");
+    public double getHeight() {
+        return (double) this.get("height");
     }
 
     /**
@@ -142,8 +184,8 @@ public class Pokemon extends Model {
      *
      * @return the Pokemon weight
      */
-    public BigDecimal getWeight() {
-        return (BigDecimal) this.get("weight");
+    public double getWeight() {
+        return (double) this.get("weight");
     }
 
     /**
@@ -153,7 +195,27 @@ public class Pokemon extends Model {
      * @throws IOException if the image was not found
      */
     public BufferedImage getImage() throws IOException {
-        String url = String.format("/images/pokemon/%03d.png", getId());
-        return ImageIO.read(getClass().getResource(url));
+        String link;
+
+        if (!new File("images").isDirectory()) {
+            new File("images").mkdir();
+        }
+
+        if (!new File("images/pokemon/").isDirectory()) {
+            new File("images/pokemon/").mkdir();
+        }
+
+        if (!new File(String.format("images/pokemon/%03d.png", this.getId())).exists()) {
+            link = String.format("https://assets.pokemon.com/assets/cms2/img/pokedex/full/%03d.png", this.getId());
+            URL url = new URL(link);
+            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+            FileOutputStream fos = new FileOutputStream(String.format("images/pokemon/%03d.png", this.getId()));
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        }
+
+        link = String.format("images/pokemon/%03d.png", this.getId());
+        File file = new File(link);
+
+        return ImageIO.read(file);
     }
 }
