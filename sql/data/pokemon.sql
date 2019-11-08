@@ -937,21 +937,15 @@ SET predecessor_id = 129
 WHERE id = 130;
 
 UPDATE pokemon
-SET successor_id = 134
-WHERE id = 133;
-
-UPDATE pokemon
-SET predecessor_id = 133,
-    successor_id   = 135
+SET predecessor_id = 133
 WHERE id = 134;
 
 UPDATE pokemon
-SET predecessor_id = 134,
-    successor_id   = 136
+SET predecessor_id = 133
 WHERE id = 135;
 
 UPDATE pokemon
-SET predecessor_id = 135
+SET predecessor_id = 133
 WHERE id = 136;
 
 UPDATE pokemon

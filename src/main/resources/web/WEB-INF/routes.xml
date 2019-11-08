@@ -1,0 +1,7 @@
+<routes>
+    <get pattern="/" call="HomeController@index" name="index"/>
+    <get pattern="/pokemon/([\d]+)" call="PokemonController@show" name="detalhes"/>
+
+    <get pattern="/api/pokemon" call="api.PokemonController@get" name="getPokemon"/>
+    <get pattern="/api/pokemon/([\d]+)" call="api.PokemonController@getById" name="getPokemonById"/>
+</routes>

@@ -1,17 +1,17 @@
 /*
- Copyright 2019 Dhiego Cassiano Fogaça Barbosa
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2019 Dhiego Cassiano Fogaça Barbosa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package app.ui;
@@ -22,6 +22,7 @@ import com.modscleo4.framework.entity.IModelCollection;
 import com.modscleo4.framework.entity.ModelCollection;
 import com.modscleo4.ui.Dialog;
 import com.modscleo4.ui.ExceptionDialog;
+import com.modscleo4.ui.component.JImageView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,7 +50,7 @@ public class PokemonDialog extends Dialog implements ActionListener {
     private JLabel lName;
     private JLabel lId;
 
-    private JLabel lImage;
+    private JImageView lImage;
     private JLabel lDescription;
     private JLabel lHeight;
     private JLabel lCategory;
@@ -68,16 +69,15 @@ public class PokemonDialog extends Dialog implements ActionListener {
     private JLabel lWeakness;
 
     public PokemonDialog(Pokemon pokemon) {
+        super(null);
+
         if (pokemon != null) {
             this.pokemon = pokemon;
 
             this.setTitle(pokemon.getName());
             this.setSize(625, 650);
             this.setMinimumSize(new Dimension(625, 650));
-            this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            this.setLocationRelativeTo(null);
             this.setLayout(new BorderLayout());
-            this.setModal(true);
 
             GridBagLayout mainLayout = new GridBagLayout();
             panelMain = new JPanel(mainLayout);
@@ -85,9 +85,9 @@ public class PokemonDialog extends Dialog implements ActionListener {
             constraints.gridx = 0;
             this.add(panelMain, BorderLayout.NORTH);
 
-            addTopPanel(constraints);
+            this.addTopPanel(constraints);
 
-            addBottomPanel(constraints);
+            this.addBottomPanel(constraints);
         }
     }
 
@@ -124,9 +124,8 @@ public class PokemonDialog extends Dialog implements ActionListener {
         panel1.setBorder(BorderFactory.createEmptyBorder(-10, 0, 0, 0));
 
         try {
-            ImageIcon icon = new ImageIcon(pokemon.getImage());
-            Image image = icon.getImage().getScaledInstance(175, 175, java.awt.Image.SCALE_SMOOTH);
-            lImage = new JLabel(new ImageIcon(image));
+            Image image = pokemon.getImage().getScaledInstance(175, 175, java.awt.Image.SCALE_SMOOTH);
+            lImage = new JImageView(image);
             lImage.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
             panel1.add(lImage);
         } /* Ash */ catch/*um*/ (Exception e) {
@@ -246,7 +245,7 @@ public class PokemonDialog extends Dialog implements ActionListener {
         return panel1;
     }
 
-    public JPanel panel2() {
+    private JPanel panel2() {
         JPanel panel2 = new JPanel();
         BoxLayout panel2Layout = new BoxLayout(panel2, BoxLayout.X_AXIS);
         panel2.setLayout(panel2Layout);
@@ -436,7 +435,7 @@ public class PokemonDialog extends Dialog implements ActionListener {
         return panel2;
     }
 
-    public JPanel panel3() {
+    private JPanel panel3() {
         JPanel panel3 = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 20));
         IModelCollection<Pokemon> evolutions = new ModelCollection<>();
 
@@ -447,13 +446,29 @@ public class PokemonDialog extends Dialog implements ActionListener {
             }
 
             evolutions.add(p);
-            while (p.successor() != null) {
-                p = p.successor();
-                evolutions.add(p);
-            }
+            if (p.successor() != null) {
+                while (p.successor() != null) {
+                    p = p.successor();
+                    evolutions.add(p);
+                }
 
-            for (Pokemon evolution : evolutions) {
-                panel3.add(new PokemonCard(evolution, false));
+                for (Pokemon evolution : evolutions) {
+                    panel3.add(new PokemonCard(evolution, false));
+                }
+            } else {
+                for (Pokemon evolution : evolutions) {
+                    panel3.add(new PokemonCard(evolution, false));
+                }
+
+                IModelCollection<Pokemon> successors = p.successors().sortBy("id");
+                if (successors.size() > 0) {
+                    JPanel multipleSuccessors = new JPanel(new GridLayout(2, 0, 5, 5));
+                    for (Pokemon s : successors) {
+                        multipleSuccessors.add(new PokemonCard(s, false, 50));
+                    }
+
+                    panel3.add(multipleSuccessors);
+                }
             }
         } /* Ash */ catch/*um*/ (Exception e) {
             ExceptionDialog.show(e);

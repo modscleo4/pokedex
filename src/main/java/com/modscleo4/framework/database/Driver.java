@@ -1,17 +1,17 @@
 /*
- Copyright 2019 Dhiego Cassiano Fogaça Barbosa
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2019 Dhiego Cassiano Fogaça Barbosa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.modscleo4.framework.database;
@@ -24,6 +24,12 @@ import java.util.Arrays;
  * @author Dhiego Cassiano Fogaça Barbosa <modscleo4@outlook.com>
  */
 public class Driver {
+    public static final int SQLITE = 0;
+    public static final int MYSQL = 1;
+    public static final int POSTGRESQL = 2;
+    public static final int SQLSERVER = 3;
+    public static final int AS400 = 4;
+
     /**
      * The supported drivers of the framework.
      */
@@ -39,22 +45,22 @@ public class Driver {
      *
      * @param driver the driver to use
      */
-    public Driver(Drivers driver) {
+    public Driver(int driver) {
         this.setName(driver);
     }
 
-    public static Drivers fromName(String name) {
+    public static int fromName(String name) {
         switch (name) {
             case "sqlite":
-                return Drivers.SQLITE;
+                return SQLITE;
             case "mysql":
-                return Drivers.MYSQL;
+                return MYSQL;
             case "postgresql":
-                return Drivers.POSTGRESQL;
+                return POSTGRESQL;
             case "sqlserver":
-                return Drivers.SQLSERVER;
+                return SQLSERVER;
             case "as400":
-                return Drivers.AS400;
+                return AS400;
             default:
                 throw new IllegalArgumentException("Invalid driver name.");
         }
@@ -87,7 +93,7 @@ public class Driver {
      *
      * @param driver the new driver
      */
-    private void setName(Drivers driver) {
+    private void setName(int driver) {
         switch (driver) {
             case SQLITE:
                 this.setName("sqlite");

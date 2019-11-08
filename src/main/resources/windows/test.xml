@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Window title="Test" width="800" height="600">
-    <JPanel background="#000000">
-
+<Window id="window" title="Test" width="800" height="600">
+    <JPanel id="panel" background="#000000">
+        <JLabel id="label" text="AAAAAAA"/>
+        <JTextField id="textField"/>
     </JPanel>
 </Window>

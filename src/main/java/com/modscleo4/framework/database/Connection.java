@@ -1,22 +1,20 @@
 /*
- Copyright 2019 Dhiego Cassiano Fogaça Barbosa
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2019 Dhiego Cassiano Fogaça Barbosa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.modscleo4.framework.database;
-
-import com.modscleo4.framework.database.sql.QueryBuilder;
 
 import java.sql.*;
 import java.util.List;
@@ -36,11 +34,6 @@ public class Connection {
      * The JDBC connection adapter.
      */
     private java.sql.Connection connection;
-
-    /**
-     * The Query Builder object.
-     */
-    private QueryBuilder queryBuilder;
 
     /**
      * The JDBC url.
@@ -63,7 +56,7 @@ public class Connection {
      * @param db the sqlite .db path
      */
     public Connection(String db) {
-        this(Drivers.SQLITE, null, null, db, null, null);
+        this(Driver.SQLITE, null, null, db, null, null);
     }
 
     /**
@@ -75,12 +68,11 @@ public class Connection {
      * @param username the username to connects to database
      * @param password the password of username
      */
-    public Connection(Drivers driver, String host, String port, String db, String username, String password) {
+    public Connection(int driver, String host, String port, String db, String username, String password) {
         this.driver = new Driver(driver);
-        this.queryBuilder = new QueryBuilder(this.getDriver());
         db = db.trim();
 
-        if (driver == Drivers.SQLITE) {
+        if (driver == Driver.SQLITE) {
             this.username = null;
             this.password = null;
         } else {
@@ -93,31 +85,31 @@ public class Connection {
         String driverName = this.driver.getName();
 
         switch (driver) {
-            case SQLITE:
+            case Driver.SQLITE:
                 this.url = String.format("jdbc:%s", db);
                 break;
-            case MYSQL:
+            case Driver.MYSQL:
                 if (port.equals("")) {
                     port = "3306";
                 }
 
                 this.url = String.format("jdbc:%s://%s:%s/%s", driverName, host, port, db);
                 break;
-            case POSTGRESQL:
+            case Driver.POSTGRESQL:
                 if (port.equals("")) {
                     port = "5432";
                 }
 
                 this.url = String.format("jdbc:%s://%s:%s/%s", driverName, host, port, db);
                 break;
-            case SQLSERVER:
+            case Driver.SQLSERVER:
                 if (port.equals("")) {
                     port = "446";
                 }
 
                 this.url = String.format("jdbc:%s://%s:%s/%s", driverName, host, port, db);
                 break;
-            case AS400:
+            case Driver.AS400:
                 if (port.equals("")) {
                     port = "1433";
                 }
@@ -155,15 +147,6 @@ public class Connection {
      */
     public Driver getDriver() {
         return driver;
-    }
-
-    /**
-     * Gets the Query Builder object.
-     *
-     * @return the Query Builder object.
-     */
-    public QueryBuilder getQueryBuilder() {
-        return queryBuilder;
     }
 
     /**
@@ -299,5 +282,9 @@ public class Connection {
 
         this.close();
         return ret;
+    }
+
+    public Table table(String tableName) {
+        return new Table(this, tableName);
     }
 }

@@ -1,147 +1,33 @@
+/*
+ * Copyright 2019 Dhiego Cassiano Fogaça Barbosa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.modscleo4.framework.database.sql;
 
-import com.modscleo4.framework.database.Driver;
+import com.modscleo4.framework.database.Connection;
 
-public class QueryBuilder {
-    private Driver driver;
-    private Commands command;
-    private String sql;
-    private boolean hasWhere = false;
-    private boolean hasOrderBy = false;
-    private boolean hasGroupBy = false;
-    private boolean hasLimit = false;
+/**
+ * Base Query Builder class.
+ */
+public abstract class QueryBuilder {
+    protected Connection connection;
 
-    public QueryBuilder(Driver driver) {
-        this.driver = driver;
-    }
-
-    /**
-     * Gets the SQL INSERT command for the specific DBMS.
-     *
-     * @param columns the desired columns
-     * @return the SQL INSERT command for the specific DBMS
-     */
-    public QueryBuilder select(String columns) {
-        switch (driver.getName()) {
-            case "sqlite":
-            case "mysql":
-            case "postgresql":
-            case "sqlserver":
-            case "as400":
-                this.sql = "SELECT * FROM %s";
-            default:
-                this.sql = "";
-        }
-
-        return this;
-    }
-
-    /**
-     * Gets the SQL INSERT command for the specific DBMS.
-     *
-     * @return the SQL INSERT command for the specific DBMS
-     */
-    public QueryBuilder select() {
-        return this.select("*");
-    }
-
-    public QueryBuilder where(String comparator) {
-        switch (driver.getName()) {
-            case "sqlite":
-            case "mysql":
-            case "postgresql":
-            case "sqlserver":
-            case "as400":
-                this.sql += String.format(" WHERE %s %s ?", "%d", comparator);
-            default:
-                this.sql = "";
-        }
-
-        return this;
-    }
-
-    public QueryBuilder limit() {
-        if (!hasLimit) {
-            switch (driver.getName()) {
-                case "sqlite":
-                case "mysql":
-                case "postgresql":
-                case "sqlserver":
-                case "as400":
-                    this.hasLimit = true;
-                    this.sql += " LIMIT %d";
-                    break;
-                default:
-                    this.sql = "";
-                    break;
-            }
-        }
-
-        return this;
-    }
-
-    public QueryBuilder limitOffset() {
-        if (!hasLimit) {
-            switch (driver.getName()) {
-                case "sqlite":
-                case "mysql":
-                case "postgresql":
-                case "sqlserver":
-                case "as400":
-                    this.hasLimit = true;
-                    this.sql += " LIMIT %d OFFSET %d";
-                    break;
-                default:
-                    this.sql = "";
-                    break;
-            }
-        }
-
-        return this;
-    }
-
-    public QueryBuilder orderBy() {
-        if (!this.hasOrderBy) {
-            switch (driver.getName()) {
-                case "sqlite":
-                case "mysql":
-                case "postgresql":
-                case "sqlserver":
-                case "as400":
-                    this.hasOrderBy = true;
-                    this.sql += " ORDER BY %s";
-                    break;
-                default:
-                    this.sql = "";
-                    break;
-            }
-        }
-
-        return this;
-    }
-
-    public QueryBuilder groupBy() {
-        if (!this.hasGroupBy) {
-            switch (driver.getName()) {
-                case "sqlite":
-                case "mysql":
-                case "postgresql":
-                case "sqlserver":
-                case "as400":
-                    this.hasGroupBy = true;
-                    this.sql += " GROUP BY %s";
-                    break;
-                default:
-                    this.sql = "";
-                    break;
-            }
-        }
-
-        return this;
+    public QueryBuilder(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
-    public String toString() {
-        return sql + ";";
-    }
+    public abstract String toString();
 }

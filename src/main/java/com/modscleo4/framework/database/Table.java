@@ -1,17 +1,17 @@
 /*
- Copyright 2019 Dhiego Cassiano Fogaça Barbosa
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2019 Dhiego Cassiano Fogaça Barbosa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.modscleo4.framework.database;
@@ -19,7 +19,6 @@ package com.modscleo4.framework.database;
 import com.modscleo4.framework.collection.ICollection;
 import com.modscleo4.framework.collection.IRow;
 import com.modscleo4.framework.collection.IRowCollection;
-import com.modscleo4.framework.database.sql.QueryBuilder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -70,7 +69,7 @@ public class Table {
      * @throws ClassNotFoundException if the connection could not be opened
      */
     public IRowCollection select() throws SQLException, ClassNotFoundException {
-        QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
+        //return new SelectQueryBuilder(this.getConnection());
 
         String sql = String.format("SELECT * FROM %s;", tableName);
         ResultSet rs = connection.query(sql);
@@ -87,8 +86,6 @@ public class Table {
      * @throws ClassNotFoundException if the connection could not be opened
      */
     public IRowCollection selectPaginated(int page) throws SQLException, ClassNotFoundException {
-        QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
-
         int limit = 10;
         int offset = (page - 1) * limit;
 
@@ -109,8 +106,6 @@ public class Table {
      */
     public IRow find(String primaryKey, Object id) throws SQLException, ClassNotFoundException {
         if (!primaryKey.equals("")) {
-            QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
-
             String sql = String.format("SELECT * FROM %s WHERE %s = ? LIMIT 1;", tableName, primaryKey);
 
             List<Object> params = new ArrayList<Object>() {{
@@ -137,8 +132,6 @@ public class Table {
      * @throws ClassNotFoundException if the connection could not be opened
      */
     public IRowCollection where(String column, String comparator, Object value) throws SQLException, ClassNotFoundException {
-        QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
-
         String sql = String.format("SELECT * FROM %s WHERE %s %s ?;", tableName, column, comparator);
 
         List<Object> params = new ArrayList<Object>() {{
@@ -158,8 +151,6 @@ public class Table {
      * @throws ClassNotFoundException if the connection could not be opened
      */
     public void store(String primaryKey, IRow data) throws SQLException, ClassNotFoundException {
-        QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
-
         String columns = String.join(", ", data.keySet());
 
         String[] arr = new String[data.keySet().size()];
@@ -183,8 +174,6 @@ public class Table {
      * @throws ClassNotFoundException if the connection could not be opened
      */
     public int update(String primaryKey, IRow data) throws SQLException, ClassNotFoundException {
-        QueryBuilder queryBuilder = this.getConnection().getQueryBuilder();
-
         String[] arr = new String[data.keySet().size()];
         Arrays.fill(arr, "%s = ?");
         String updateString = String.format(String.join(", ", arr), data.keySet().toArray());

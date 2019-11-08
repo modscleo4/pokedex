@@ -1,0 +1,91 @@
+<html>
+<head>
+    <title>Pokedex</title>
+
+    <meta charset="utf-8">
+
+    <style type="text/css">
+        body {
+            font-family: sans-serif;
+            text-align: center;
+        }
+
+        #main {
+            display: grid;
+            justify-items: center;
+            text-align: left;
+        }
+
+        #pokemons {
+            display: grid;
+            justify-items: center;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-column-gap: 20px;
+        }
+
+        .card {
+            display: grid;
+            grid-template-rows: 4fr 1fr;
+        }
+
+        .card img {
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="main">
+    <form id="pokemonForm" action="#" method="get">
+        ID: <input type="text" name="id" id="inputId"/>
+        <button type="submit">Search</button>
+    </form>
+
+    <button type="button" onclick="loadPokemons();">Load</button>
+
+    <div id="pokemons">
+
+    </div>
+</div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    Number.prototype.pad = function (size) {
+        var s = String(this);
+        while (s.length < (size || 2)) {
+            s = "0" + s;
+        }
+        return s;
+    };
+
+    let page = 1;
+
+    function loadPokemons() {
+        let json = fetch(`/api/pokemon?page=${page++}`).then(response => {
+            return response.json();
+        }).then(array => {
+            const grid = jQuery('#pokemons');
+            array.forEach(pokemon => {
+                grid.append(`
+<a href="/pokemon/${pokemon.id}">
+    <div class="card">
+        <img src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/${pokemon.id.pad(3)}.png" />
+        <span>Nº ${pokemon.id}</span>
+        <span>${pokemon.name}</span>
+    </div>
+</a>
+                `);
+            });
+        });
+    }
+
+    jQuery(document).ready(function () {
+        jQuery('#pokemonForm').submit(function (e) {
+            e.preventDefault();
+            location.href = `/pokemon/${jQuery('#inputId').val()}`;
+        });
+    });
+</script>
+</body>
+</html>

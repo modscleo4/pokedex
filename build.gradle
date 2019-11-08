@@ -26,10 +26,15 @@ jar {
                 'Class-Path': ("lib/" + fileTree("$buildDir/libs/lib").files.name.join(' lib/')).replace('\n ', '')
         )
     }
+
+    exclude("web/**")
 }
 
 dependencies {
     compile group: 'io.github.cdimascio', name: 'java-dotenv', version: '+'
     compile group: 'org.postgresql', name: 'postgresql', version: '+'
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '+'
+    compile group: 'javax.servlet', name: 'jsp-api', version: '+'
+    compile group: 'com.google.code.gson', name: 'gson', version: '+'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
