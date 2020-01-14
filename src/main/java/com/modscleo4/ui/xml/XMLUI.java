@@ -25,10 +25,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -338,7 +342,14 @@ public class XMLUI {
     }
 
     public static Window windowFromResource(String xml, Window window) throws ParserConfigurationException, IOException, SAXException {
+        File schemaFile = new File("/windows/window.xsd");
+
+        String constant = XMLConstants.W3C_XML_SCHEMA_NS_URI;
+        SchemaFactory xsdFactory = SchemaFactory.newInstance(constant);
+        Schema schema = xsdFactory.newSchema(schemaFile);
+
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setSchema(schema);
         dbf.setNamespaceAware(true);
         DocumentBuilder docBuilder = dbf.newDocumentBuilder();
         InputStream xmlFile = new Object() {
@@ -361,7 +372,14 @@ public class XMLUI {
     }
 
     public static Dialog dialogFromResource(String xml, Dialog dialog) throws ParserConfigurationException, IOException, SAXException {
+        File schemaFile = new File("/windows/window.xsd");
+
+        String constant = XMLConstants.W3C_XML_SCHEMA_NS_URI;
+        SchemaFactory xsdFactory = SchemaFactory.newInstance(constant);
+        Schema schema = xsdFactory.newSchema(schemaFile);
+
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setSchema(schema);
         dbf.setNamespaceAware(true);
         DocumentBuilder docBuilder = dbf.newDocumentBuilder();
         InputStream xmlFile = new Object() {

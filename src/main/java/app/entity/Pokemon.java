@@ -37,173 +37,126 @@ public class Pokemon extends Model {
         table = "pokemon";
     }
 
-    /**
-     * Gets the predecessor Pokemon.
-     *
-     * @return the predecessor Pokemon
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     * @throws InvalidKeyException      if the primary key could not be obtained
-     */
     public Pokemon predecessor() throws IllegalArgumentException, InvalidKeyException, SQLException, ClassNotFoundException {
         return (Pokemon) this.belongsTo(Pokemon.class, "predecessor_id");
     }
 
-    /**
-     * Gets the successor Pokemon.
-     *
-     * @return the successor Pokemon
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     * @throws InvalidKeyException      if the primary key could not be obtained
-     */
     public Pokemon successor() throws IllegalArgumentException, InvalidKeyException, SQLException, ClassNotFoundException {
         return (Pokemon) this.belongsTo(Pokemon.class, "successor_id");
     }
 
-    /**
-     * Gets the successors Pokemon.
-     *
-     * @return the successors Pokemon
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     * @throws InvalidKeyException      if the primary key could not be obtained
-     */
     public IModelCollection<Pokemon> successors() throws SQLException, InvalidKeyException, ClassNotFoundException {
         return (IModelCollection<Pokemon>) this.hasMany(Pokemon.class, "predecessor_id");
     }
 
-    /**
-     * Gets the Pokemon Category.
-     *
-     * @return the Pokemon Category
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     * @throws InvalidKeyException      if the primary key could not be obtained
-     */
     public Category category() throws IllegalArgumentException, InvalidKeyException, SQLException, ClassNotFoundException {
         return (Category) this.belongsTo(Category.class);
     }
 
-    /**
-     * Gets the Pokemon Genders.
-     *
-     * @return the Pokemon Genders
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     * @throws InvalidKeyException      if the primary key could not be obtained
-     */
     public IModelCollection<Gender> genders() throws SQLException, InvalidKeyException, ClassNotFoundException {
         return (IModelCollection<Gender>) this.belongsToMany(Gender.class);
     }
 
-    /**
-     * Gets the Pokemon Abilities.
-     *
-     * @return the Pokemon Abilities
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     * @throws InvalidKeyException      if the primary key could not be obtained
-     */
+    public void syncGenders(IModelCollection<Gender> genders) {
+
+    }
+
     public IModelCollection<Ability> abilities() throws SQLException, InvalidKeyException, ClassNotFoundException {
         return (IModelCollection<Ability>) this.belongsToMany(Ability.class);
     }
 
-    /**
-     * Gets the Pokemon Stats.
-     *
-     * @return the Pokemon Stats
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     */
     public Stats stats() throws SQLException, InvalidKeyException, ClassNotFoundException {
         return (Stats) this.hasOne(Stats.class);
     }
 
-    /**
-     * Gets the Pokemon Types.
-     *
-     * @return the Pokemon Types
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     * @throws InvalidKeyException      if the primary key could not be obtained
-     */
     public IModelCollection<Type> types() throws SQLException, InvalidKeyException, ClassNotFoundException {
         return (IModelCollection<Type>) this.belongsToMany(Type.class);
     }
 
-    /**
-     * Gets the Pokemon Weaknesses.
-     *
-     * @return the Pokemon Weaknesses
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     * @throws InvalidKeyException      if the primary key could not be obtained
-     */
     public IModelCollection<Weakness> weaknesses() throws SQLException, InvalidKeyException, ClassNotFoundException {
         return (IModelCollection<Weakness>) this.belongsToMany(Weakness.class);
     }
 
-    /**
-     * Gets the Pokemon id.
-     *
-     * @return the Pokemon id
-     */
+    public Weakness weaknessAgainst(Type t) throws SQLException, InvalidKeyException, ClassNotFoundException {
+        return ((IModelCollection<Weakness>) this.belongsToMany(Weakness.class)).where(w -> w.getId() == t.getId()).first();
+    }
+
     public long getId() {
         return (long) this.get("id");
     }
 
-    /**
-     * Gets the Pokemon name.
-     *
-     * @return the Pokemon name
-     */
     public String getName() {
         return (String) this.get("name");
     }
 
-    /**
-     * Gets the Pokemon description.
-     *
-     * @return the Pokemon description
-     */
+    public void setName(String name) {
+        this.set("name", name);
+    }
+
     public String getDescription() {
         return (String) this.get("description");
     }
 
-    /**
-     * Gets the Pokemon height.
-     *
-     * @return the Pokemon height
-     */
+    public void setDescription(String description) {
+        this.set("description", description);
+    }
+
     public double getHeight() {
         return (double) this.get("height");
     }
 
-    /**
-     * Gets the Pokemon weight.
-     *
-     * @return the Pokemon weight
-     */
+    public void setHeight(double height) {
+        this.set("height", height);
+    }
+
+    public long getCategoryId() {
+        return (long) this.get("category_id");
+    }
+
+    public void setCategoryId(long categoryId) {
+        this.set("category_id", categoryId);
+    }
+
     public double getWeight() {
         return (double) this.get("weight");
     }
 
-    /**
-     * Gets the Pokemon image.
-     *
-     * @return the Pokemon image
-     * @throws IOException if the image was not found
-     */
+    public void setWeight(double weight) {
+        this.set("weight", weight);
+    }
+
+    public long getPredecessorId() {
+        if (this.get("predecessor_id") == null) {
+            return 0;
+        }
+
+        return (long) this.get("predecessor_id");
+    }
+
+    public void setPredecessorId(long predecessorId) {
+        if (predecessorId <= 0) {
+            this.set("predecessor_id", null);
+        } else {
+            this.set("predecessor_id", predecessorId);
+        }
+    }
+
+    public long getSuccessorId() {
+        if (this.get("successor_id") == null) {
+            return 0;
+        }
+
+        return (long) this.get("successor_id");
+    }
+
+    public void setSuccessorId(long successorId) {
+        if (successorId <= 0) {
+            this.set("successor_id", null);
+        } else {
+            this.set("successor_id", successorId);
+        }
+    }
+
     public Image getImage() throws IOException {
         String link;
 

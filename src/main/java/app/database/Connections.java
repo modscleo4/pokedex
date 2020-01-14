@@ -23,9 +23,7 @@ package app.database;
  */
 public class Connections {
     /**
-     * Use this for JSP
+     * Use this to set .env directory
      */
-    public static final String envdir = "../webapps/ROOT/WEB-INF/.env";
-
-    //public static final String envdir = "./";
+    public static String envdir = "./";
 }

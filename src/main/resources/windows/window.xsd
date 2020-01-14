@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE xsd:schema>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="framework.Window"
+            version="2.0"
+            elementFormDefault="qualified">
+    <xsd:simpleType name="Cursor">
+        <xsd:restriction base="xsd:int">
+            <xsd:enumeration value="DEFAULT_CURSOR"/>
+            <xsd:enumeration value="CROSSHAIR_CURSOR"/>
+            <xsd:enumeration value="TEXT_CURSOR"/>
+            <xsd:enumeration value="WAIT_CURSOR"/>
+            <xsd:enumeration value="SW_RESIZE_CURSOR"/>
+            <xsd:enumeration value="SE_RESIZE_CURSOR"/>
+            <xsd:enumeration value="NW_RESIZE_CURSOR"/>
+            <xsd:enumeration value="NE_RESIZE_CURSOR"/>
+            <xsd:enumeration value="N_RESIZE_CURSOR"/>
+            <xsd:enumeration value="S_RESIZE_CURSOR"/>
+            <xsd:enumeration value="W_RESIZE_CURSOR"/>
+            <xsd:enumeration value="E_RESIZE_CURSOR"/>
+            <xsd:enumeration value="HAND_CURSOR"/>
+            <xsd:enumeration value="MOVE_CURSOR"/>
+            <xsd:enumeration value="CUSTOM_CURSOR"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="Alignment">
+        <xsd:restriction base="xsd:float">
+            <xsd:enumeration value="TOP_ALIGNMENT"/>
+            <xsd:enumeration value="CENTER_ALIGNMENT"/>
+            <xsd:enumeration value="BOTTOM_ALIGNMENT"/>
+            <xsd:enumeration value="LEFT_ALIGNMENT"/>
+            <xsd:enumeration value="RIGHT_ALIGNMENT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="Dimension">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]+, [0-9]+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="Component">
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="x" type="xsd:int"/>
+        <xsd:attribute name="y" type="xsd:int"/>
+        <xsd:attribute name="width" type="xsd:int"/>
+        <xsd:attribute name="height" type="xsd:int"/>
+        <xsd:attribute name="foreground" type="xsd:string"/>
+        <xsd:attribute name="background" type="xsd:string"/>
+        <xsd:attribute name="font" type="xsd:string"/>
+        <xsd:attribute name="cursor" type="Cursor"/>
+        <xsd:attribute name="locale" type="xsd:string"/>
+        <xsd:attribute name="visible" type="xsd:boolean"/>
+        <xsd:attribute name="enabled" type="xsd:boolean"/>
+        <xsd:attribute name="valid" type="xsd:boolean"/>
+        <xsd:attribute name="focusable" type="xsd:boolean"/>
+        <xsd:attribute name="minSize" type="Dimension"/>
+        <xsd:attribute name="prefSize" type="Dimension"/>
+        <xsd:attribute name="maxSize" type="Dimension"/>
+        <xsd:attribute name="alignment" type="Alignment"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Container">
+        <xsd:complexContent>
+            <xsd:extension base="Component">
+                <xsd:choice maxOccurs="unbounded" minOccurs="0">
+                    <xsd:element ref="JPanel"/>
+
+                    <xsd:element ref="GridLayout"/>
+                    <xsd:element ref="BoxLayout"/>
+
+                    <xsd:element ref="JLabel"/>
+                    <xsd:element ref="JTextField"/>
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Frame">
+        <xsd:complexContent>
+            <xsd:extension base="Container">
+                <xsd:attribute name="title" type="xsd:string"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Layout">
+        <xsd:complexContent>
+            <xsd:extension base="Container">
+
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="Window" type="Frame">
+
+    </xsd:element>
+
+    <xsd:element name="Dialog" type="Frame">
+
+    </xsd:element>
+
+    <xsd:element name="GridLayout" type="Layout">
+
+    </xsd:element>
+
+    <xsd:element name="GridBagLayout" type="Layout">
+
+    </xsd:element>
+
+    <xsd:element name="BoxLayout" type="Layout">
+
+    </xsd:element>
+
+    <xsd:element name="BorderLayout" type="Layout">
+
+    </xsd:element>
+
+    <xsd:element name="FlowLayout" type="Layout">
+
+    </xsd:element>
+
+    <xsd:element name="JPanel" type="Container">
+
+    </xsd:element>
+
+    <xsd:element name="JLabel">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="Component">
+                    <xsd:attribute name="text" type="xsd:string"/>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="JTextField" type="Component"/>
+</xsd:schema>

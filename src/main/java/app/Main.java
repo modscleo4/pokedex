@@ -16,6 +16,7 @@
 
 package app;
 
+import app.database.Connections;
 import app.ui.MainWindow;
 import com.modscleo4.ui.ExceptionDialog;
 
@@ -32,6 +33,8 @@ public class Main {
     public static void main(String[] args) {
         try {
             Thread.setDefaultUncaughtExceptionHandler((t, e) -> ExceptionDialog.show(e));
+
+            Connections.envdir = "./";
 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 

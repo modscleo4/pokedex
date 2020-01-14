@@ -10,10 +10,10 @@
 
     Category category = pokemon.category();
     IModelCollection<Ability> abilities = pokemon.abilities();
-    IModelCollection<Gender> genders = pokemon.genders();
+    IModelCollection<Gender> genders = pokemon.genders().sortBy("name");
     Stats stats = pokemon.stats();
     IModelCollection<Type> types = pokemon.types();
-    IModelCollection<Weakness> weaknesses = pokemon.weaknesses().sortByDesc("effectiveness");
+    IModelCollection<Weakness> weaknesses = pokemon.weaknesses().sortByDesc("effectiveness").where(w -> w.getEffectiveness() > 3);
 
     List<String> gs = new ArrayList<>();
     for (Gender g : genders) {

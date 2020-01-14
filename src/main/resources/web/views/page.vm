@@ -1,0 +1,66 @@
+#macro(body)
+    #set($body = $!bodyContent)
+#end
+
+#@page_body()
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Pokedex</a>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            #if($_user && $_user.isAdmin())
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/pokemon">Pokemon</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/types">Types</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/users">Users</a>
+                </li>
+            #end
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0" action="/search">
+            <input class="form-control mr-sm-2" type="search" name="q" placeholder="Search" aria-label="Search"/>
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+
+        <ul class="navbar-nav">
+            #if($_user)
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdownUserMenu" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user">$_user.getName()</i>
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownUserMenu">
+                        <a class="nav-link" onclick="jQuery('#logoutForm').submit();" href="#">Logout</a>
+                    </div>
+                </li>
+            #else
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+            #end
+        </ul>
+    </div>
+</nav>
+
+<div class="content" style="padding: 15px;">
+    #if($_user)
+        <form id="logoutForm" action="/logout" method="post"></form>
+    #end
+
+    #if($body)
+        $!body
+    #end
+</div>
+
+<footer>
+
+</footer>
+#end
+
+#parse("master.vm")

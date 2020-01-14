@@ -1,0 +1,46 @@
+#macro(css)
+    #set($css = $!bodyContent)
+#end
+
+#macro(page_body)
+    #set($page_body = $!bodyContent)
+#end
+
+#macro(js)
+    #set($js = $!bodyContent)
+#end
+
+#macro(call $foo)
+    #if($foo)#**##end
+#end
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>$!page_title</title>
+
+    <link rel="stylesheet" href="/res/css/bootstrap.min.css">
+
+    #if($css)
+        $!css
+    #end
+</head>
+<body>
+<div class="main">
+    #if($page_body)
+        $!page_body
+    #end
+</div>
+
+<script src="/res/js/jquery-3.4.1.js" type="text/javascript"></script>
+<script src="/res/js/bootstrap.min.js" type="text/javascript"></script>
+
+    #if($js)
+        $!js
+    #end
+</body>
+</html>

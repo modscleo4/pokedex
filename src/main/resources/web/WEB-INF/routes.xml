@@ -1,7 +1,74 @@
-<routes>
-    <get pattern="/" call="HomeController@index" name="index"/>
-    <get pattern="/pokemon/([\d]+)" call="PokemonController@show" name="detalhes"/>
+<?xml version="1.0" encoding="utf-8" ?>
+<routes xmlns="framework.Routes">
+    <get pattern="" call="HomeController@index" name="index"/>
+    <get pattern="home" call="HomeController@home" name="home"/>
 
-    <get pattern="/api/pokemon" call="api.PokemonController@get" name="getPokemon"/>
-    <get pattern="/api/pokemon/([\d]+)" call="api.PokemonController@getById" name="getPokemonById"/>
+    <group prefix="" name="auth.">
+        <get pattern="login" call="auth.LoginController@form" name="loginForm"/>
+        <post pattern="login" call="auth.LoginController@login" name="login"/>
+        <post pattern="logout" call="auth.LoginController@logout" name="logout"/>
+
+        <get pattern="register" call="auth.RegisterController@form" name="registerForm"/>
+        <post pattern="register" call="auth.RegisterController@register" name="register"/>
+    </group>
+
+    <group prefix="admin" name="admin.">
+        <get pattern="" call="admin.HomeController@index" name="index"/>
+
+        <group prefix="pokemon" name="pokemon.">
+            <get pattern="" call="admin.PokemonController@index" name="index"/>
+            <get pattern="new" call="admin.PokemonController@create" name="create"/>
+            <post pattern="" call="admin.PokemonController@store" name="store"/>
+
+            <group prefix="([\d]+)">
+                <get pattern="" call="admin.PokemonController@show" name="show"/>
+                <get pattern="edit" call="admin.PokemonController@edit" name="edit"/>
+                <put pattern="" call="admin.PokemonController@update" name="update"/>
+                <delete pattern="" call="admin.PokemonController@destroy" name="destroy"/>
+            </group>
+        </group>
+
+        <group prefix="types" name="type.">
+            <get pattern="" call="admin.TypeController@index" name="index"/>
+            <get pattern="new" call="admin.TypeController@create" name="create"/>
+            <post pattern="" call="admin.TypeController@store" name="store"/>
+
+            <group prefix="([\d]+)">
+                <get pattern="" call="admin.TypeController@show" name="show"/>
+                <get pattern="edit" call="admin.TypeController@edit" name="edit"/>
+                <put pattern="" call="admin.TypeController@update" name="update"/>
+                <delete pattern="" call="admin.TypeController@destroy" name="destroy"/>
+            </group>
+        </group>
+
+        <group prefix="users" name="user.">
+            <get pattern="" call="admin.UserController@index" name="index"/>
+            <get pattern="new" call="admin.UserController@create" name="create"/>
+            <post pattern="" call="admin.UserController@store" name="store"/>
+
+            <group prefix="([\d]+)">
+                <get pattern="" call="admin.UserController@show" name="show"/>
+                <get pattern="edit" call="admin.UserController@edit" name="edit"/>
+                <put pattern="" call="admin.UserController@update" name="update"/>
+                <delete pattern="" call="admin.UserController@destroy" name="destroy"/>
+            </group>
+        </group>
+    </group>
+
+    <group prefix="pokemon" name="pokemon.">
+        <group prefix="([\d]+)">
+            <get pattern="" call="PokemonController@show" name="show"/>
+        </group>
+    </group>
+
+    <get pattern="search" call="HomeController@search" name="search"/>
+
+    <group prefix="api" name="api.">
+        <group prefix="pokemon" name="pokemon.">
+            <get pattern="" call="api.PokemonController@get" name="get"/>
+            <group prefix="([\d]+)">
+                <get pattern="" call="api.PokemonController@getById" name="getById"/>
+            </group>
+        </group>
+    </group>
 </routes>

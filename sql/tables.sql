@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS users_has_pokemon;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS pokemon_has_weaknesses;
 DROP TABLE IF EXISTS pokemon_has_types;
 DROP TABLE IF EXISTS types;
@@ -86,12 +87,20 @@ CREATE TABLE pokemon_has_weaknesses
     effectiveness INT    NOT NULL DEFAULT 3
 );
 
+CREATE TABLE roles
+(
+    id          BIGSERIAL   NOT NULL PRIMARY KEY,
+    name        VARCHAR(30) NOT NULL,
+    description VARCHAR(100) DEFAULT NULL
+);
+
 CREATE TABLE users
 (
     id       BIGSERIAL    NOT NULL PRIMARY KEY,
     name     VARCHAR(100) NOT NULL,
     email    VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL
+    password VARCHAR(100) NOT NULL,
+    role_id  BIGINT       NOT NULL REFERENCES roles
 );
 
 CREATE TABLE users_has_pokemon

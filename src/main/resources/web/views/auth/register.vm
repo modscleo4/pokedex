@@ -1,0 +1,7 @@
+#set($page_title = "Register")
+
+#@body()
+
+#end
+
+#parse("master.vm")

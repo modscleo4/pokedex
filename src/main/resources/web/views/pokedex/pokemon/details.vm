@@ -1,0 +1,310 @@
+#set($page_title = $pokemon.getName())
+
+#@css()
+<style type=text/css>
+    body {
+        font-family: sans-serif;
+        text-align: center;
+    }
+
+    #main {
+        display: grid;
+        justify-items: center;
+        text-align: left;
+    }
+
+    #name {
+        padding: 10px;
+    }
+
+    #p1 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        justify-items: center;
+    }
+
+    #desc {
+        display: grid;
+        grid-template-rows: 1fr 1.5fr;
+    }
+
+    #info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-row-gap: 10px;
+        grid-column-gap: 10px;
+    }
+
+    #p2 {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        justify-items: center;
+    }
+
+    #stats {
+
+    }
+
+    #types_weaknesses {
+        display: grid;
+        justify-items: left;
+        grid-row-gap: 10px;
+    }
+
+    #types {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-row-gap: 5px;
+        grid-column-gap: 5px;
+        justify-items: center;
+    }
+
+    #weaknesses {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-row-gap: 5px;
+        grid-column-gap: 5px;
+        justify-items: center;
+    }
+
+    .card {
+        display: grid;
+        grid-template-rows: 4fr 1fr 1fr 1fr;
+    }
+
+    .card img {
+        width: 150px;
+    }
+
+    .card.mini img {
+        width: 75px;
+        grid-template-rows: 4fr 1fr 1fr 1fr;
+    }
+
+    .multicard {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        grid-row-gap: 10px;
+        grid-column-gap: 10px;
+    }
+
+    #p3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-column-gap: 40px;
+        justify-items: center;
+    }
+</style>
+#end
+
+#@body()
+<div id="mainContent">
+    <div id="name">
+        $pokemon.getName() | Nº $String.format("%03d", $pokemon.getId())
+    </div>
+
+    <div id="p1">
+        <img src="$String.format("https://assets.pokemon.com/assets/cms2/img/pokedex/full/%03d.png", $pokemon.getId())"
+             height="200"/>
+
+        <div style="display: none;">
+            #set($category = $pokemon.category())
+            #set($abilities = $pokemon.abilities())
+            #set($genders = $pokemon.genders().sortBy("name"))
+            #set($stats = $pokemon.stats())
+            #set($types = $pokemon.types())
+        </div>
+
+        <div id="desc">
+            <span>$pokemon.getDescription().replace("\\n", "<br/>")</span>
+
+            <div id="info">
+                <span>
+                    <span>Height</span><br/>
+                    <span>$pokemon.getHeight() m</span>
+                </span>
+
+                <span>
+                    <span>Weight</span><br/>
+                    <span>$pokemon.getWeight() kg</span>
+                </span>
+
+                <span>
+                    <span>Category</span><br/>
+                    <span>$category.getName()</span>
+                </span>
+
+                <span>
+                    <span>Abilities</span><br/>
+                    <span>
+                        #foreach($a in $abilities)
+                            <span title="$a.getDescription()">$a.getName()</span><br/>
+                        #end
+                    </span>
+                </span>
+
+                <span>
+                    <span>Genders</span><br/>
+                    <span>
+                        $String.join(", ", $genders.column("name"))
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+    <span>Stats</span><br/>
+
+    <div id="p2">
+        <table id="stats">
+            <thead>
+            <tr>
+                <th>HP</th>
+                <th>Attack</th>
+                <th>Defense</th>
+                <th>Sp. Attack</th>
+                <th>Sp. Defense</th>
+                <th>Speed</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>$stats.getHP()</td>
+                <td>$stats.getAttack()</td>
+                <td>$stats.getDefense()</td>
+                <td>$stats.getSpecialAttack()</td>
+                <td>$stats.getSpecialDefense()</td>
+                <td>$stats.getSpeed()</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div id="types_weaknesses">
+            <div>
+                <span>Types</span>
+
+                <div id="types">
+                    #foreach($t in $types)
+                        <span style="color: $t.getHTMLColor()">
+                            $t.getName()
+                        </span>
+                    #end
+                </div>
+            </div>
+
+            <div>
+                <span>Weaknesses</span>
+
+                <div id="weaknesses">
+                    #foreach($w in $weaknesses)
+                        <span title="Effectiveness: $w.getFormattedEffectiveness()" style="color: $w.getHTMLColor()">
+                            $w.getName()
+                        </span>
+                    #end
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+    <span>Evolutions</span><br/>
+
+    <div id="p3">
+        #set($p = $pokemon)
+
+        #if($p.predecessor())
+            #set($p = $p.predecessor())
+
+            #if($p.predecessor())
+                #set($p = $p.predecessor())
+            #end
+        #end
+
+        #set($evolutions = [])
+        #call($evolutions.add($p))
+
+        #if($p.successor())
+            <div style="display: none;">
+                #set($p = $p.successor())
+                #call($evolutions.add($p))
+
+                #if($p.successor())
+                #set($p = $p.successor())
+                #call($evolutions.add($p))
+            #end
+            </div>
+
+            #foreach($evolution in $evolutions)
+                <div class="card">
+                    <img src="$String.format(
+                        "https://assets.pokemon.com/assets/cms2/img/pokedex/full/%03d.png", $evolution.getId())"/>
+                    <span>Nº $String.format("%03d", $evolution.getId())</span>
+                    <span>$evolution.getName()</span>
+                    <span>
+                        #set($eTypes = $evolution.types())
+                        #foreach($t in $eTypes)
+                            <span style="color: $t.getHTMLColor()">
+                                $t.getName()
+                            </span>
+                        #end
+                    </span>
+                </div>
+            #end
+        #else
+            #foreach($evolution in $evolutions)
+                <div class="card">
+                    <img src="$String.format(
+                        "https://assets.pokemon.com/assets/cms2/img/pokedex/full/%03d.png", $evolution.getId())"/>
+                    <span>Nº $String.format("%03d", $evolution.getId())</span>
+                    <span>$evolution.getName()</span>
+                    <span>
+                        #set($eTypes = $evolution.types())
+                        #foreach($t in $eTypes)
+                            <span style="color: $t.getHTMLColor()">
+                                $t.getName()
+                            </span>
+                        #end
+                    </span>
+                </div>
+            #end
+
+            #set($successors = $p.successors().sortBy("id"))
+            #if($successors.size() > 0)
+                <div class="multicard">
+                    #foreach($s in $successors)
+                        <div class="card mini">
+                            <img src="$String.format(
+                                "https://assets.pokemon.com/assets/cms2/img/pokedex/full/%03d.png", $s.getId())"/>
+                            <span>Nº $String.format("%03d", $s.getId())</span>
+                            <span>$s.getName()</span>
+                            <span>
+                                #set($sTypes = $s.types())
+                                #foreach($t in $sTypes)
+                                    <span style="color: $t.getHTMLColor()">
+                                        $t.getName()
+                                    </span>
+                                #end
+                            </span>
+                        </div>
+                    #end
+                </div>
+            #end
+        #end
+    </div>
+</div>
+#end
+
+#@js()
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        let len = jQuery('#p3').children().length;
+        jQuery('#p3').css('grid-template-columns', '1fr '.repeat(len));
+    });
+</script>
+#end
+
+#parse("page.vm")

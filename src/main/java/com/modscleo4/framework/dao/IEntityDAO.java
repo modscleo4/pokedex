@@ -81,6 +81,13 @@ public interface IEntityDAO<T extends IModel> {
     Class<? extends IModel> getModelClass();
 
     /**
+     * If the table has primary key auto incrementing, gets the next ID.
+     *
+     * @return the next ID
+     */
+    long nextID() throws SQLException, ClassNotFoundException;
+
+    /**
      * Gets all entities from database.
      *
      * @return all entities from database

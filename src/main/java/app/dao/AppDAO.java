@@ -31,4 +31,6 @@ public class AppDAO {
     public static EntityDAO<Gender> genderDAO = new EntityDAO<>(Gender.class);
     public static EntityDAO<Stats> statsDAO = new EntityDAO<>(Stats.class);
     public static EntityDAO<Type> typeDAO = new EntityDAO<>(Type.class);
+    public static EntityDAO<User> userDAO = new EntityDAO<>(User.class);
+    public static EntityDAO<Role> roleDAO = new EntityDAO<>(Role.class);
 }

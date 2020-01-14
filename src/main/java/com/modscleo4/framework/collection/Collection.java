@@ -21,7 +21,6 @@ import com.modscleo4.framework.callback.IMapCallback;
 import com.modscleo4.framework.callback.IReduceCallback;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Collection class.
@@ -52,8 +51,10 @@ public class Collection<T> extends ArrayList<T> implements ICollection<T> {
     public ICollection<T> map(IMapCallback<T> callback) {
         ICollection<T> mapped = this;
 
-        AtomicInteger i = new AtomicInteger();
-        mapped.parallelStream().forEach(row -> mapped.set(i.getAndIncrement(), callback.method(row)));
+        int i = 0;
+        for (T row : mapped) {
+            mapped.set(i++, callback.method(row));
+        }
 
         return mapped;
     }
@@ -62,13 +63,14 @@ public class Collection<T> extends ArrayList<T> implements ICollection<T> {
     public ICollection<T> filter(IFilterCallback<T> callback) {
         ICollection<T> filtered = new Collection<>();
 
-        AtomicInteger i = new AtomicInteger();
-        this.parallelStream().forEach(row -> {
-            T r = this.get(i.get());
-            if (callback.method(r)) {
-                filtered.add(this.get(i.getAndIncrement()));
+        int i = 0;
+        for (T row : this) {
+            if (callback.method(row)) {
+                filtered.add(this.get(i));
             }
-        });
+
+            i++;
+        }
 
         return filtered;
     }

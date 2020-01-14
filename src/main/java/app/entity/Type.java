@@ -28,50 +28,31 @@ public class Type extends Model {
         table = "types";
     }
 
-    /**
-     * @return the matching hasMany entities
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     * @throws InvalidKeyException      if the primary key could not be obtained
-     */
     public IModelCollection<Pokemon> pokemons() throws IllegalArgumentException, InvalidKeyException, SQLException, ClassNotFoundException {
         return (IModelCollection<Pokemon>) this.hasMany(Pokemon.class);
     }
 
-    /**
-     * Gets the Type id.
-     *
-     * @return the Type id
-     */
     public long getId() {
         return (long) this.get("id");
     }
 
-    /**
-     * Gets the Type name.
-     *
-     * @return the Type name
-     */
     public String getName() {
         return (String) this.get("name");
     }
 
-    /**
-     * Gets the Type color.
-     *
-     * @return the Type color
-     */
-    public Color getColor() {
-        return Color.decode((String) this.get("color"));
+    public void setName(String name) {
+        this.set("name", name);
     }
 
-    /**
-     * Gets the Type color (HTML).
-     *
-     * @return the Type color (in HTML)
-     */
     public String getHTMLColor() {
         return (String) this.get("color");
+    }
+
+    public void setHTMLColor(String color) {
+        this.set("color", color);
+    }
+
+    public Color getColor() {
+        return Color.decode(this.getHTMLColor());
     }
 }

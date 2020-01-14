@@ -82,11 +82,20 @@ public interface IModel extends IRow {
     /**
      * Save the model in database.
      *
-     * @return true if saved
+     * @return the model instance
      * @throws SQLException           if some DB error occurred
      * @throws ClassNotFoundException if the connection could not be opened
      */
     IModel save() throws SQLException, IllegalAccessException, InstantiationException, ClassNotFoundException;
+
+    /**
+     * Deletes the model in database.
+     *
+     * @throws SQLException if some DB error occurred
+     * @throws ClassNotFoundException if the connection could not be opened
+     * @throws InvalidKeyException
+     */
+    void delete() throws SQLException, ClassNotFoundException, InvalidKeyException;
 
     /**
      * Runs hasOne relation between the entities.

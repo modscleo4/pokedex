@@ -1,0 +1,9 @@
+#set($page_title = "Home")
+
+#@body()
+#if($_user.isAdmin())
+    #parse("admin/home.vm")
+#end
+#end
+
+#parse("page.vm")

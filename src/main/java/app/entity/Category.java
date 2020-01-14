@@ -32,32 +32,19 @@ public class Category extends Model {
         table = "categories";
     }
 
-    /**
-     * @return the matching hasMany entities
-     * @throws IllegalArgumentException if the related entity could not be instantiated
-     * @throws SQLException             if some DB error occurred
-     * @throws ClassNotFoundException   if the connection could not be opened
-     * @throws InvalidKeyException      if the primary key could not be obtained
-     */
     public IModelCollection<Pokemon> pokemons() throws IllegalArgumentException, InvalidKeyException, SQLException, ClassNotFoundException {
         return (IModelCollection<Pokemon>) this.hasMany(Pokemon.class);
     }
 
-    /**
-     * Gets the Category id.
-     *
-     * @return the Category id
-     */
     public long getId() {
         return (long) this.get("id");
     }
 
-    /**
-     * Gets the Category name.
-     *
-     * @return the Category name
-     */
     public String getName() {
         return (String) this.get("name");
+    }
+
+    public void setName(String name) {
+        this.set("name", name);
     }
 }

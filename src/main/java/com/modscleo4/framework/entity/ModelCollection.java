@@ -18,6 +18,7 @@ package com.modscleo4.framework.entity;
 
 import com.modscleo4.framework.callback.IFilterCallback;
 import com.modscleo4.framework.collection.Collection;
+import com.modscleo4.framework.collection.ICollection;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -43,6 +44,26 @@ public class ModelCollection<T extends IModel> extends Collection<T> implements 
         result.addAll(super.filter(callback));
 
         return result;
+    }
+
+    @Override
+    public ICollection<Object> column(String column) {
+        ICollection<Object> result = new Collection<>();
+        for (T t : this) {
+            result.add(t.get(column));
+        }
+
+        return result;
+    }
+
+    @Override
+    public T find(String column, Object value) {
+        return this.where(row -> row.get(column).equals(value)).first();
+    }
+
+    @Override
+    public T find(Object value) {
+        return this.find("id", value);
     }
 
     @Override

@@ -89,8 +89,20 @@ public class EntityDAO<T extends IModel> implements IEntityDAO<T> {
     }
 
     @Override
+    public long nextID() throws SQLException, ClassNotFoundException {
+        if (this.isIncrementing()) {
+            IRow result = this.getDatabaseTable().currentID(this.getKeyName());
+            if (result != null) {
+                return (long) result.get("last_value") + 1;
+            }
+        }
+
+        return 0;
+    }
+
+    @Override
     public IModelCollection<T> all() throws IllegalArgumentException, SQLException, ClassNotFoundException {
-        IRowCollection rc = getDatabaseTable().select();
+        IRowCollection rc = getDatabaseTable().select().get();
         IModelCollection<T> models = new ModelCollection<>();
         rc.forEach(row -> {
             try {
@@ -107,7 +119,10 @@ public class EntityDAO<T extends IModel> implements IEntityDAO<T> {
 
     @Override
     public IModelCollection<T> page(int page) throws IllegalArgumentException, SQLException, ClassNotFoundException {
-        IRowCollection rc = getDatabaseTable().selectPaginated(page);
+        int limit = 10;
+        int offset = (page - 1) * limit;
+
+        IRowCollection rc = getDatabaseTable().selectPaginated(offset).get();
         IModelCollection<T> models = new ModelCollection<>();
         rc.forEach(row -> {
             try {
@@ -128,7 +143,7 @@ public class EntityDAO<T extends IModel> implements IEntityDAO<T> {
             throw new NoSuchFieldException("There is no primary key set.");
         }
 
-        IRow row = getDatabaseTable().find(this.getKeyName(), id);
+        IRow row = getDatabaseTable().find(this.getKeyName(), id).get().first();
 
         try {
             IModel model = this.getModelClass().getDeclaredConstructor().newInstance();
@@ -141,7 +156,7 @@ public class EntityDAO<T extends IModel> implements IEntityDAO<T> {
 
     @Override
     public IModelCollection<T> where(String column, String comparator, Object value) throws IllegalArgumentException, SQLException, ClassNotFoundException {
-        IRowCollection rc = getDatabaseTable().where(column, comparator, value);
+        IRowCollection rc = getDatabaseTable().where(column, comparator, value).get();
         IModelCollection<T> models = new ModelCollection<>();
         rc.forEach(row -> {
             try {

@@ -16,9 +16,10 @@
 
 package com.modscleo4.framework.database;
 
-import com.modscleo4.framework.collection.ICollection;
 import com.modscleo4.framework.collection.IRow;
 import com.modscleo4.framework.collection.IRowCollection;
+import com.modscleo4.framework.database.sql.SelectQueryBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -62,37 +63,45 @@ public class Table {
     }
 
     /**
+     * Gets the next sequence ID.
+     *
+     * @return the next sequence ID
+     */
+    public IRow currentID(String primaryKey) throws SQLException, ClassNotFoundException {
+        String sql = String.format("SELECT last_value FROM %s_%s_seq;", this.getTableName(), primaryKey);
+        ResultSet rs = this.connection.query(sql);
+
+        return IRowCollection.fromResultSet(rs).first();
+    }
+
+    /**
      * Runs table SELECT in database.
      *
      * @return all entries in database
-     * @throws SQLException           if some DB error occurred
-     * @throws ClassNotFoundException if the connection could not be opened
      */
-    public IRowCollection select() throws SQLException, ClassNotFoundException {
-        //return new SelectQueryBuilder(this.getConnection());
-
-        String sql = String.format("SELECT * FROM %s;", tableName);
-        ResultSet rs = connection.query(sql);
-
-        return IRowCollection.fromResultSet(rs);
+    public SelectQueryBuilder select() {
+        return new SelectQueryBuilder(this);
     }
 
     /**
      * Runs table SELECT with pagination in database.
      *
-     * @param page the desired page
+     * @param limit  the desired limit
+     * @param offset the desired offset
      * @return all entries in database
-     * @throws SQLException           if some DB error occurred
-     * @throws ClassNotFoundException if the connection could not be opened
      */
-    public IRowCollection selectPaginated(int page) throws SQLException, ClassNotFoundException {
-        int limit = 10;
-        int offset = (page - 1) * limit;
+    public SelectQueryBuilder selectPaginated(int limit, int offset) {
+        return new SelectQueryBuilder(this).limit(limit, offset);
+    }
 
-        String sql = String.format("SELECT * FROM %s LIMIT %d OFFSET %d;", tableName, limit, offset);
-        ResultSet rs = connection.query(sql);
-
-        return IRowCollection.fromResultSet(rs);
+    /**
+     * Runs table SELECT with pagination in database (limit = 10).
+     *
+     * @param offset the desired offset
+     * @return all entries in database
+     */
+    public SelectQueryBuilder selectPaginated(int offset) {
+        return selectPaginated(10, offset);
     }
 
     /**
@@ -101,21 +110,10 @@ public class Table {
      * @param primaryKey the primary key of the table
      * @param id         the value to search for
      * @return the found row in database, null if nothing found
-     * @throws SQLException           if some DB error occurred
-     * @throws ClassNotFoundException if the connection could not be opened
      */
-    public IRow find(String primaryKey, Object id) throws SQLException, ClassNotFoundException {
+    public SelectQueryBuilder find(String primaryKey, Object id) {
         if (!primaryKey.equals("")) {
-            String sql = String.format("SELECT * FROM %s WHERE %s = ? LIMIT 1;", tableName, primaryKey);
-
-            List<Object> params = new ArrayList<Object>() {{
-                add(id);
-            }};
-            ResultSet rs = connection.query(sql, params);
-            ICollection<IRow> rowCollection = IRowCollection.fromResultSet(rs);
-            if (rowCollection.size() > 0) {
-                return rowCollection.get(0);
-            }
+            return this.where(primaryKey, "=", id).limit(1);
         }
 
         return null;
@@ -128,18 +126,9 @@ public class Table {
      * @param comparator the comparator (<, <=, >, >=, =, <>)
      * @param value      the value to compare
      * @return all entities that match the condition
-     * @throws SQLException           if some DB error occurred
-     * @throws ClassNotFoundException if the connection could not be opened
      */
-    public IRowCollection where(String column, String comparator, Object value) throws SQLException, ClassNotFoundException {
-        String sql = String.format("SELECT * FROM %s WHERE %s %s ?;", tableName, column, comparator);
-
-        List<Object> params = new ArrayList<Object>() {{
-            add(value);
-        }};
-        ResultSet rs = connection.query(sql, params);
-
-        return IRowCollection.fromResultSet(rs);
+    public SelectQueryBuilder where(String column, String comparator, Object value) {
+        return new SelectQueryBuilder(this).where(column, comparator, value);
     }
 
     /**
@@ -157,23 +146,30 @@ public class Table {
         Arrays.fill(arr, "?");
         String vs = String.format(String.join(", ", arr), data.keySet().toArray());
 
-        String values = String.join(", ", data.values().toString());
         String sql = String.format("INSERT INTO %s (%s) VALUES (%s);", tableName, columns, vs);
 
         List<Object> params = new ArrayList<Object>() {{
-            add(values);
+            data.keySet().forEach(col -> add(data.get(col)));
         }};
-        data.set(primaryKey, connection.update(sql, params, primaryKey));
+
+        if (primaryKey != null) {
+            data.set(primaryKey, connection.update(sql, params, primaryKey));
+        } else {
+            connection.update(sql, params);
+        }
     }
 
     /**
+     * Runs table UPDATE in database.
+     *
      * @param primaryKey the primary key of the table
      * @param data       the data to save
-     * @return either (1) the row count for SQL Data Manipulation Language (DML) statements or (2) 0 for SQL statements that return nothing
+     * @return either (1) the row count for SQL Data Manipulation Language (DML) statements
+     * or (2) 0 for SQL statements that return nothing
      * @throws SQLException           if some DB error occurred
      * @throws ClassNotFoundException if the connection could not be opened
      */
-    public int update(String primaryKey, IRow data) throws SQLException, ClassNotFoundException {
+    public int update(@NotNull String primaryKey, IRow data) throws SQLException, ClassNotFoundException {
         String[] arr = new String[data.keySet().size()];
         Arrays.fill(arr, "%s = ?");
         String updateString = String.format(String.join(", ", arr), data.keySet().toArray());
@@ -181,10 +177,28 @@ public class Table {
         String sql = String.format("UPDATE %s SET %s WHERE %s = ?;", tableName, updateString, primaryKey);
 
         List<Object> params = new ArrayList<Object>() {{
-            data.keySet().forEach(col -> {
-                add(data.get(col));
-            });
+            data.keySet().forEach(col -> add(data.get(col)));
 
+            add(data.get(primaryKey));
+        }};
+
+        return connection.update(sql, params);
+    }
+
+    /**
+     * Runs table DELETE in database.
+     *
+     * @param primaryKey the primary key of the table
+     * @param data       the data to save
+     * @return either (1) the row count for SQL Data Manipulation Language (DML) statements
+     * or (2) 0 for SQL statements that return nothing
+     * @throws SQLException           if some DB error occurred
+     * @throws ClassNotFoundException if the connection could not be opened
+     */
+    public int delete(@NotNull String primaryKey, IRow data) throws SQLException, ClassNotFoundException {
+        String sql = String.format("DELETE FROM %s WHERE %s = ?;", tableName, primaryKey);
+
+        List<Object> params = new ArrayList<Object>() {{
             add(data.get(primaryKey));
         }};
 

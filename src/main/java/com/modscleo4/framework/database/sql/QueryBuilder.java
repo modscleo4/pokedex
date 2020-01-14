@@ -28,6 +28,11 @@ public abstract class QueryBuilder {
         this.connection = connection;
     }
 
+    /**
+     * Gets the compiled SQL.
+     *
+     * @return the compiled SQL
+     */
     @Override
     public abstract String toString();
 }

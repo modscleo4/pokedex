@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE xsd:schema>
+<xsd:schema xmlns="framework.Routes"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="framework.Routes"
+            version="2.0"
+            elementFormDefault="qualified">
+    <xsd:complexType name="route">
+        <xsd:attribute name="pattern" type="xsd:token" use="required"/>
+        <xsd:attribute name="call" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="group">
+        <xsd:choice maxOccurs="unbounded" minOccurs="0">
+            <xsd:element ref="group"/>
+
+            <xsd:element name="get" type="route"/>
+            <xsd:element name="post" type="route"/>
+            <xsd:element name="put" type="route"/>
+            <xsd:element name="patch" type="route"/>
+            <xsd:element name="delete" type="route"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:element name="routes" type="group"/>
+
+    <xsd:element name="group">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="group">
+                    <xsd:attribute name="prefix" type="xsd:token" use="required"/>
+                    <xsd:attribute name="name" type="xsd:string"/>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

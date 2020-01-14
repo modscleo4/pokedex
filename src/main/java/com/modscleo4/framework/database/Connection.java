@@ -16,6 +16,8 @@
 
 package com.modscleo4.framework.database;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.sql.*;
 import java.util.List;
 
@@ -53,7 +55,7 @@ public class Connection {
     /**
      * Creates a new DB Connection instance (SQLite).
      *
-     * @param db the sqlite .db path
+     * @param db the SQLite .db path
      */
     public Connection(String db) {
         this(Driver.SQLITE, null, null, db, null, null);
@@ -153,7 +155,8 @@ public class Connection {
      * Runs a SQL statement that does not need to return data.
      *
      * @param sql the SQL string
-     * @return <code>true</code> if the first result is a <code>ResultSet</code> object; <code>false</code> if it is an update count or there are no results
+     * @return <code>true</code> if the first result is a <code>ResultSet</code> object;
+     * <code>false</code> if it is an update count or there are no results
      * @throws SQLException           if some DB error occurred
      * @throws ClassNotFoundException if the connection could not be opened
      */
@@ -167,9 +170,12 @@ public class Connection {
     }
 
     /**
+     * Runs a SQL statement that does not need to return data.
+     *
      * @param sql    the prepared SQL string
      * @param params the values to prepared query
-     * @return <code>true</code> if the first result is a <code>ResultSet</code> object; <code>false</code> if it is an update count or there are no results
+     * @return <code>true</code> if the first result is a <code>ResultSet</code> object;
+     * <code>false</code> if it is an update count or there are no results
      * @throws SQLException           if some DB error occurred
      * @throws ClassNotFoundException if the connection could not be opened
      */
@@ -187,8 +193,11 @@ public class Connection {
     }
 
     /**
+     * Runs a SQL statement that returns data.
+     *
      * @param sql the SQL string
-     * @return a <code>ResultSet</code> object that contains the data produced by the given query; never <code>null</code>
+     * @return a <code>ResultSet</code> object that contains the data produced by the given query;
+     * never <code>null</code>
      * @throws SQLException           if some DB error occurred
      * @throws ClassNotFoundException if the connection could not be opened
      */
@@ -202,13 +211,16 @@ public class Connection {
     }
 
     /**
+     * Runs a SQL statement that returns data.
+     *
      * @param sql    the prepared SQL string
      * @param params the values to prepared query
-     * @return a <code>ResultSet</code> object that contains the data produced by the given query; never <code>null</code>
+     * @return a <code>ResultSet</code> object that contains the data produced by the given query;
+     * never <code>null</code>
      * @throws SQLException           if some DB error occurred
      * @throws ClassNotFoundException if the connection could not be opened
      */
-    public ResultSet query(String sql, List<Object> params) throws SQLException, ClassNotFoundException {
+    public ResultSet query(String sql, @NotNull List<Object> params) throws SQLException, ClassNotFoundException {
         this.open();
 
         PreparedStatement stmt = connection.prepareStatement(sql);
@@ -222,8 +234,11 @@ public class Connection {
     }
 
     /**
+     * Runs a SQL statement that does not return data, like INSERT.
+     *
      * @param sql the SQL string
-     * @return either (1) the row count for SQL Data Manipulation Language (DML) statements or (2) 0 for SQL statements that return nothing
+     * @return either (1) the row count for SQL Data Manipulation Language (DML) statements
+     * or (2) 0 for SQL statements that return nothing
      * @throws SQLException           if some DB error occurred
      * @throws ClassNotFoundException if the connection could not be opened
      */
@@ -237,9 +252,12 @@ public class Connection {
     }
 
     /**
+     * Runs a SQL statement that does not return data, like INSERT.
+     *
      * @param sql    the prepared SQL string
      * @param params the values to prepared query
-     * @return either (1) the row count for SQL Data Manipulation Language (DML) statements or (2) 0 for SQL statements that return nothing
+     * @return either (1) the row count for SQL Data Manipulation Language (DML) statements
+     * or (2) 0 for SQL statements that return nothing
      * @throws SQLException           if some DB error occurred
      * @throws ClassNotFoundException if the connection could not be opened
      */
@@ -258,14 +276,16 @@ public class Connection {
     }
 
     /**
+     * Runs a SQL statement that does not return data, like INSERT.
+     *
      * @param sql       the prepared SQL string
      * @param params    the values to prepared query
      * @param returning the column to return
-     * @return either (1) the row count for SQL Data Manipulation Language (DML) statements or (2) 0 for SQL statements that return nothing
+     * @return the value from `returning` column.
      * @throws SQLException           if some DB error occurred
      * @throws ClassNotFoundException if the connection could not be opened
      */
-    public Object update(String sql, List<Object> params, String returning) throws SQLException, ClassNotFoundException {
+    public Object update(String sql, List<Object> params, @NotNull String returning) throws SQLException, ClassNotFoundException {
         this.open();
 
         PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);

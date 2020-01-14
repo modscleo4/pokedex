@@ -30,4 +30,27 @@ public class Weakness extends Type {
     public int getEffectiveness() {
         return (int) this.get("effectiveness");
     }
+
+    public String getFormattedEffectiveness() {
+        switch (this.getEffectiveness()) {
+            case 0:
+                return "0";
+            case 1:
+                return "⅛";
+            case 2:
+                return "¼";
+            case 3:
+                return "½";
+            case 5:
+                return "2";
+            case 6:
+                return "4";
+        }
+
+        return null;
+    }
+
+    public void setEffectiveness(int effectiveness) {
+        this.set("effectiveness", effectiveness);
+    }
 }

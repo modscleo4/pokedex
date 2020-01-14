@@ -40,21 +40,21 @@ public interface IRowCollection extends ICollection<IRow> {
     static IRowCollection fromResultSet(ResultSet rs) throws SQLException {
         IRowCollection rowCollection = new RowCollection();
 
-        ResultSetMetaData rsmd = rs.getMetaData();
+        ResultSetMetaData rsMetadata = rs.getMetaData();
         List<String> c = new ArrayList<>();
 
-        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-            c.add(rsmd.getColumnName(i));
+        for (int i = 1; i <= rsMetadata.getColumnCount(); i++) {
+            c.add(rsMetadata.getColumnName(i));
         }
 
-        String[] columns = c.toArray(new String[rsmd.getColumnCount()]);
+        String[] columns = c.toArray(new String[rsMetadata.getColumnCount()]);
 
         while (rs.next()) {
             List<Object> v = new ArrayList<>();
-            for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+            for (int i = 1; i <= rsMetadata.getColumnCount(); i++) {
                 v.add(rs.getObject(i));
             }
-            Object[] values = v.toArray(new Object[rsmd.getColumnCount()]);
+            Object[] values = v.toArray(new Object[rsMetadata.getColumnCount()]);
 
             IRow row = new Row(columns, values);
             rowCollection.add(row);

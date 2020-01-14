@@ -35,6 +35,31 @@ public interface IModelCollection<T extends IModel> extends ICollection<T> {
     IModelCollection<T> where(IFilterCallback<T> callback);
 
     /**
+     * Filters the ModelCollection by a column.
+     *
+     * @param column the column to filter
+     * @return a new IModelCollection as result
+     */
+    ICollection<Object> column(String column);
+
+    /**
+     * Filters the ModelCollection and finds the first occurrence.
+     *
+     * @param column the column to search
+     * @param value the value to search
+     * @return a new IModel as result
+     */
+    T find(String column, Object value);
+
+    /**
+     * Filters the ModelCollection and finds the first occurrence.
+     *
+     * @param value the value to search
+     * @return a new IModel as result
+     */
+    T find(Object value);
+
+    /**
      * Sorts the ModelCollection ascending.
      *
      * @param column the column to sort

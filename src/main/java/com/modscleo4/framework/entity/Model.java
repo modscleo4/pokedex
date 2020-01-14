@@ -116,13 +116,25 @@ public abstract class Model extends Row implements IModel {
         Table table = getDatabaseTable();
         String pKey = getKeyName();
 
-        if (pKey != null && get(pKey) != null) {
+        if (pKey != null && this.get(pKey) != null) {
             table.update(pKey, this);
         } else {
             table.store(pKey, this);
         }
 
         return this;
+    }
+
+    @Override
+    public void delete() throws SQLException, ClassNotFoundException, InvalidKeyException {
+        Table table = getDatabaseTable();
+        String pKey = getKeyName();
+
+        if (pKey != null && this.get(pKey) != null) {
+            table.delete(pKey, this);
+        } else {
+            throw new InvalidKeyException("There is no primary key.");
+        }
     }
 
     @Override
@@ -138,7 +150,7 @@ public abstract class Model extends Row implements IModel {
                 localKey = getKeyName();
             }
 
-            IRow row = entity.getDatabaseTable().where(foreignKey, "=", this.get(localKey)).first();
+            IRow row = entity.getDatabaseTable().where(foreignKey, "=", this.get(localKey)).get().first();
             if (row == null) {
                 return null;
             }
@@ -174,7 +186,7 @@ public abstract class Model extends Row implements IModel {
                 localKey = getKeyName();
             }
 
-            ICollection<IRow> rows = entity.getDatabaseTable().where(foreignKey, "=", this.get(localKey));
+            ICollection<IRow> rows = entity.getDatabaseTable().where(foreignKey, "=", this.get(localKey)).get();
             IModelCollection<IModel> related = new ModelCollection<>();
             for (IRow r : rows) {
                 if (r == null) {
@@ -216,7 +228,7 @@ public abstract class Model extends Row implements IModel {
                 ownerKey = entity.getKeyName();
             }
 
-            IRow row = entity.getDatabaseTable().where(ownerKey, "=", this.get(foreignKey)).first();
+            IRow row = entity.getDatabaseTable().where(ownerKey, "=", this.get(foreignKey)).get().first();
             if (row == null) {
                 return null;
             }
@@ -270,10 +282,10 @@ public abstract class Model extends Row implements IModel {
             }
 
             Table pivot = new Table(connection, table);
-            ICollection<IRow> searchFor = pivot.where(foreignPivotKey, "=", this.get(parentKey));
+            ICollection<IRow> searchFor = pivot.where(foreignPivotKey, "=", this.get(parentKey)).get();
             IModelCollection<IModel> related = new ModelCollection<>();
             for (IRow s : searchFor) {
-                IRow row = entity.getDatabaseTable().where(relatedKey, "=", s.get(relatedPivotKey)).first();
+                IRow row = entity.getDatabaseTable().where(relatedKey, "=", s.get(relatedPivotKey)).get().first();
                 if (row == null) {
                     related.add(null);
                     continue;
@@ -321,5 +333,9 @@ public abstract class Model extends Row implements IModel {
     @Override
     public IModelCollection<? extends IModel> belongsToMany(Class<? extends IModel> className) throws IllegalArgumentException, SQLException, ClassNotFoundException, InvalidKeyException {
         return this.belongsToMany(className, null, null, null, null, null);
+    }
+
+    public void sync(Class<? extends IModel> className, String table, String foreignPivotKey, String relatedPivotKey, String parentKey, String relatedKey) {
+
     }
 }

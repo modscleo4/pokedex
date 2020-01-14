@@ -3,7 +3,7 @@ package app.web.controllers.api;
 import app.entity.Pokemon;
 import com.modscleo4.framework.collection.Collection;
 import com.modscleo4.framework.entity.IModelCollection;
-import com.modscleo4.framework.web.controllers.Controller;
+import com.modscleo4.framework.web.controller.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

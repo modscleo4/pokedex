@@ -70,7 +70,11 @@ public class Row extends LinkedHashMap<String, Object> implements IRow {
 
     @Override
     public void set(String key, Object value) {
-        this.replace(key, value);
+        if (!this.containsKey(key)) {
+            this.put(key, value);
+        } else {
+            this.replace(key, value);
+        }
     }
 
     /**
